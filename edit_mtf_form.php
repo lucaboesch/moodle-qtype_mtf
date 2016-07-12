@@ -155,6 +155,7 @@ class qtype_mtf_edit_form extends question_edit_form {
 				$mform->addElement('tags', 'tags', get_string('tags'), array('itemtype' => 'mtf', 'component' => 'qtype_mtf'));
 			}
 		}
+		$this->add_interactive_settings(true, true);
 		
         if (!empty($this->question->id)) {
             $mform->addElement('header', 'createdmodifiedheader',
