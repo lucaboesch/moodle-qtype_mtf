@@ -8,13 +8,14 @@
 //
 // Moodle is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle. If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ *
  * @package qtype_mtf
  * @author Amr Hourani amr.hourani@id.ethz.ch
  * @copyright ETHz 2016 amr.hourani@id.ethz.ch
@@ -22,8 +23,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
-require_once($CFG->libdir . '/questionlib.php');
-require_once($CFG->dirroot . '/question/type/mtf/lib.php');
+require_once ($CFG->libdir . '/questionlib.php');
+require_once ($CFG->dirroot . '/question/type/mtf/lib.php');
 
 
 /**
@@ -102,20 +103,20 @@ class qtype_mtf extends question_type {
 
         // Retrieve the question options.
         $question->options = $DB->get_record('qtype_mtf_options',
-        array('questionid' => $question->id
-        ));
+                array('questionid' => $question->id
+                ));
         // Retrieve the question rows (mtf options).
         $question->options->rows = $DB->get_records('qtype_mtf_rows',
-        array('questionid' => $question->id
-        ), 'number ASC', '*', 0, $question->options->numberofrows);
+                array('questionid' => $question->id
+                ), 'number ASC', '*', 0, $question->options->numberofrows);
         // Retrieve the question columns.
         $question->options->columns = $DB->get_records('qtype_mtf_columns',
-        array('questionid' => $question->id
-        ), 'number ASC', '*', 0, $question->options->numberofcolumns);
+                array('questionid' => $question->id
+                ), 'number ASC', '*', 0, $question->options->numberofcolumns);
 
         $weightrecords = $DB->get_records('qtype_mtf_weights',
-        array('questionid' => $question->id
-        ), 'rownumber ASC, columnnumber ASC');
+                array('questionid' => $question->id
+                ), 'rownumber ASC, columnnumber ASC');
 
         foreach ($question->options->rows as $key => $row) {
             $question->{'option_' . $row->number}['text'] = $row->optiontext;
@@ -153,8 +154,8 @@ class qtype_mtf extends question_type {
 
         // Insert all the new options.
         $options = $DB->get_record('qtype_mtf_options',
-        array('questionid' => $question->id
-        ));
+                array('questionid' => $question->id
+                ));
         if (!$options) {
             $options = new stdClass();
             $options->questionid = $question->id;
@@ -162,7 +163,7 @@ class qtype_mtf extends question_type {
             $options->shuffleoptions = '';
             $options->numberofcolumns = '';
             $options->numberofrows = '';
-			$options->answernumbering = '';
+            $options->answernumbering = '';
             $options->id = $DB->insert_record('qtype_mtf_options', $options);
         }
 
@@ -170,16 +171,15 @@ class qtype_mtf extends question_type {
         $options->shuffleoptions = $question->shuffleoptions;
         $options->numberofrows = $question->numberofrows;
         $options->numberofcolumns = $question->numberofcolumns;
-		$options->answernumbering = $question->answernumbering;
+        $options->answernumbering = $question->answernumbering;
         $DB->update_record('qtype_mtf_options', $options);
 
         $this->save_hints($question, true);
 
         // Insert all the new rows.
-        $oldrows = $DB->get_records('qtype_mtf_rows',
-        array('questionid' => $question->id
+        $oldrows = $DB->get_records('qtype_mtf_rows', array('questionid' => $question->id
         ), 'number ASC');
-		$newrows = array();
+        $newrows = array();
 
         for ($i = 1; $i <= $options->numberofrows; ++$i) {
             $row = array_shift($oldrows);
@@ -207,21 +207,22 @@ class qtype_mtf extends question_type {
 
             $DB->update_record('qtype_mtf_rows', $row);
 
-			$newrows[$row->id] = $row->id;
+            $newrows[$row->id] = $row->id;
         }
-		// Delete any left over old rows.
-		$fs = get_file_storage();
-		foreach ($oldrows as $oldrow) {
-			if (!in_array($oldrow->id, $newrows)) {
-					$fs->delete_area_files($context->id, 'qtype_mtf', 'optiontext', $oldrow->id);
-					$fs->delete_area_files($context->id, 'qtype_mtf', 'feedbacktext', $oldrow->id);
-					$DB->delete_records('qtype_mtf_rows', array('id' => $oldrow->id));
-			}
-		}
+        // Delete any left over old rows.
+        $fs = get_file_storage();
+        foreach ($oldrows as $oldrow) {
+            if (!in_array($oldrow->id, $newrows)) {
+                $fs->delete_area_files($context->id, 'qtype_mtf', 'optiontext', $oldrow->id);
+                $fs->delete_area_files($context->id, 'qtype_mtf', 'feedbacktext', $oldrow->id);
+                $DB->delete_records('qtype_mtf_rows', array('id' => $oldrow->id
+                ));
+            }
+        }
         $oldcolumns = $DB->get_records('qtype_mtf_columns',
-        array('questionid' => $question->id
-        ), 'number ASC');
-		$newcols = array();
+                array('questionid' => $question->id
+                ), 'number ASC');
+        $newcols = array();
         // Insert all new columns.
         for ($i = 1; $i <= $options->numberofcolumns; ++$i) {
             $column = array_shift($oldcolumns);
@@ -239,21 +240,22 @@ class qtype_mtf extends question_type {
             $column->responsetext = $question->{'responsetext_' . $i};
             $column->responsetextformat = FORMAT_MOODLE;
             $DB->update_record('qtype_mtf_columns', $column);
-			$newcols[$column->id] = $column->id;
+            $newcols[$column->id] = $column->id;
         }
 
-		// Delete any left over old columns.
-		foreach ($oldcolumns as $oldcolumn) {
-			if (!in_array($oldcolumn->id, $newcols)) {
-					$DB->delete_records('qtype_mtf_columns', array('id' => $oldcolumn->id));
-			}
-		}
+        // Delete any left over old columns.
+        foreach ($oldcolumns as $oldcolumn) {
+            if (!in_array($oldcolumn->id, $newcols)) {
+                $DB->delete_records('qtype_mtf_columns', array('id' => $oldcolumn->id
+                ));
+            }
+        }
 
         // Set all the new weights.
         $oldweightrecords = $DB->get_records('qtype_mtf_weights',
-        array('questionid' => $question->id
-        ), 'rownumber ASC, columnnumber ASC');
-		$newweights = array();
+                array('questionid' => $question->id
+                ), 'rownumber ASC, columnnumber ASC');
+        $newweights = array();
         // Put the old weights into an array.
         $oldweights = $this->weight_records_to_array($oldweightrecords);
 
@@ -281,15 +283,16 @@ class qtype_mtf extends question_type {
                     $weight->weight = 0.0;
                 }
                 $DB->update_record('qtype_mtf_weights', $weight);
-				$newweights[$weight->id] = $weight->id;
+                $newweights[$weight->id] = $weight->id;
             }
         }
-		// Delete any left over old weights.
-		foreach ($oldweightrecords as $oldweightrecord) {
-			if (!in_array($oldweightrecord->id, $newweights)) {
-					$DB->delete_records('qtype_mtf_weights', array('id' => $oldweightrecord->id));
-			}
-		}
+        // Delete any left over old weights.
+        foreach ($oldweightrecords as $oldweightrecord) {
+            if (!in_array($oldweightrecord->id, $newweights)) {
+                $DB->delete_records('qtype_mtf_weights', array('id' => $oldweightrecord->id
+                ));
+            }
+        }
     }
 
     /**
@@ -308,7 +311,7 @@ class qtype_mtf extends question_type {
         $question->rows = $questiondata->options->rows;
         $question->columns = $questiondata->options->columns;
         $question->weights = $questiondata->options->weights;
-		$question->answernumbering = $questiondata->options->answernumbering;
+        $question->answernumbering = $questiondata->options->answernumbering;
     }
 
     /**
@@ -358,32 +361,32 @@ class qtype_mtf extends question_type {
      */
     public function get_random_guess_score($questiondata) {
         $scoring = $questiondata->options->scoringmethod;
-		$questionoptioncount = $questiondata->options->numberofcolumns;
-		$totalfraction = 0;
-		$countpositiveweights = 0;
-		$question = $this->make_question($questiondata);
+        $questionoptioncount = $questiondata->options->numberofcolumns;
+        $totalfraction = 0;
+        $countpositiveweights = 0;
+        $question = $this->make_question($questiondata);
         $weights = $question->weights;
-		foreach ($question->rows as $rowid => $row) {
-			foreach ($question->columns as $columnid => $column) {
-					$weight = $weights[$row->number][$column->number]->weight;
-					$totalfraction += $weight;		
-					if ($weight > 0){
-						$countpositiveweights ++;
-					}
-			}
-		}
-		if ($questionoptioncount > 1) {			
-			if ($scoring == 'mtfonezero') { 
-				return pow(0.5,count($question->rows)); //1.0 / (pow(2,count($question->rows)));
-			} else if ($scoring == 'subpoints') {
-				return 0.5; //1.0 / count($questiondata->options->rows);
-			} else {
-				return 0.00;
-			}		
-		} else {
-			// Single choice questions - average choice fraction.
-			return 1.0 / count($questiondata->options->rows);
-		}
+        foreach ($question->rows as $rowid => $row) {
+            foreach ($question->columns as $columnid => $column) {
+                $weight = $weights[$row->number][$column->number]->weight;
+                $totalfraction += $weight;
+                if ($weight > 0) {
+                    $countpositiveweights++;
+                }
+            }
+        }
+        if ($questionoptioncount > 1) {
+            if ($scoring == 'mtfonezero') {
+                return pow(0.5, count($question->rows)); // 1.0 / (pow(2,count($question->rows)));
+            } else if ($scoring == 'subpoints') {
+                return 0.5; // 1.0 / count($questiondata->options->rows);
+            } else {
+                return 0.00;
+            }
+        } else {
+            // Single choice questions - average choice fraction.
+            return 1.0 / count($questiondata->options->rows);
+        }
     }
 
     /**
@@ -392,77 +395,78 @@ class qtype_mtf extends question_type {
      * @see question_type::get_possible_responses()
      */
     public function get_possible_responses($questiondata) {
-		
-		$questionoptioncount = $questiondata->options->numberofcolumns;
-		
+        $questionoptioncount = $questiondata->options->numberofcolumns;
+
         $question = $this->make_question($questiondata);
         $weights = $question->weights;
         $parts = array();
-		if ($questionoptioncount > 1) {
-			foreach ($question->rows as $rowid => $row) {
-				$choices = array();
-				foreach ($question->columns as $columnid => $column) {
-					// Calculate the partial credit.
-					if ($question->scoringmethod == 'subpoints') {
-						$partialcredit = 0.0;
-					} else {
-						$partialcredit = -0.999; // Due to non-linear math.
-					}
-					if (($question->scoringmethod == 'subpoints') &&
-							 $weights[$row->number][$column->number]->weight > 0) {
-						$partialcredit = 1 / count($question->rows);
-					}
-					$correctreponse = '';
-					if ($weights[$row->number][$column->number]->weight > 0) { // Is it correct
-																			   // Response?
-						$correctreponse = ' (' . get_string('correctresponse', 'qtype_mtf') . ')';
-					}
-					$choices[$columnid] = new question_possible_response(
-							question_utils::to_plain_text($row->optiontext, $row->optiontextformat) .
-									 ': ' . question_utils::to_plain_text(
-											$column->responsetext . $correctreponse,
-											$column->responsetextformat), $partialcredit);
-				}			
-				$choices[null] = question_possible_response::no_response();	
-
-				$parts[$rowid] = $choices;
-			}
-			return $parts;
-		} else {
-		    $choices = array();
+        if ($questionoptioncount > 1) {
             foreach ($question->rows as $rowid => $row) {
-				
-				foreach ($question->columns as $columnid => $column) {
-					if ($weights[$row->number][$column->number]->weight > 0) { // Is it correct
-																			   // Response?
-						$correctreponse = ' (' . get_string('correctresponse', 'qtype_mtf') . ')';
-						$partialcredit = 1;
-					} else {
-						$correctreponse = '';
-						$partialcredit = 0;
-					}
-				}
+                $choices = array();
+                foreach ($question->columns as $columnid => $column) {
+                    // Calculate the partial credit.
+                    if ($question->scoringmethod == 'subpoints') {
+                        $partialcredit = 0.0;
+                    } else {
+                        $partialcredit = -0.999; // Due to non-linear math.
+                    }
+                    if (($question->scoringmethod == 'subpoints') &&
+                             $weights[$row->number][$column->number]->weight > 0) {
+                        $partialcredit = 1 / count($question->rows);
+                    }
+                    $correctreponse = '';
+                    if ($weights[$row->number][$column->number]->weight > 0) { // Is it correct
+                                                                               // Response?
+                        $correctreponse = ' (' . get_string('correctresponse', 'qtype_mtf') . ')';
+                    }
+                    $choices[$columnid] = new question_possible_response(
+                            question_utils::to_plain_text($row->optiontext, $row->optiontextformat) .
+                                     ': ' . question_utils::to_plain_text(
+                                            $column->responsetext . $correctreponse,
+                                            $column->responsetextformat), $partialcredit);
+                }
+                $choices[null] = question_possible_response::no_response();
+
+                $parts[$rowid] = $choices;
+            }
+            return $parts;
+        } else {
+            $choices = array();
+            foreach ($question->rows as $rowid => $row) {
+
+                foreach ($question->columns as $columnid => $column) {
+                    if ($weights[$row->number][$column->number]->weight > 0) { // Is it correct
+                                                                               // Response?
+                        $correctreponse = ' (' . get_string('correctresponse', 'qtype_mtf') . ')';
+                        $partialcredit = 1;
+                    } else {
+                        $correctreponse = '';
+                        $partialcredit = 0;
+                    }
+                }
                 $choices[$rowid] = new question_possible_response(
-						question_utils::to_plain_text($row->optiontext . $correctreponse, $row->optiontextformat), $partialcredit);
+                        question_utils::to_plain_text($row->optiontext . $correctreponse,
+                                $row->optiontextformat), $partialcredit);
             }
             $choices[null] = question_possible_response::no_response();
-            return array($questiondata->id => $choices);
-
-		}
-
+            return array($questiondata->id => $choices
+            );
+        }
     }
 
     /**
+     *
      * @return array of the numbering styles supported. For each one, there
-     *      should be a lang string answernumberingxxx in teh qtype_mtf
-     *      language file, and a case in the switch statement in number_in_style,
-     *      and it should be listed in the definition of this column in install.xml.
+     *         should be a lang string answernumberingxxx in teh qtype_mtf
+     *         language file, and a case in the switch statement in number_in_style,
+     *         and it should be listed in the definition of this column in install.xml.
      */
     public static function get_numbering_styles() {
         $styles = array();
-        foreach (array('none', 'abc', 'ABCD', '123', 'iii', 'IIII') as $numberingoption) {
-            $styles[$numberingoption] =
-                    get_string('answernumbering' . $numberingoption, 'qtype_mtf');
+        foreach (array('none', 'abc', 'ABCD', '123', 'iii', 'IIII'
+        ) as $numberingoption) {
+            $styles[$numberingoption] = get_string('answernumbering' . $numberingoption,
+                    'qtype_mtf');
         }
         return $styles;
     }
@@ -504,13 +508,13 @@ class qtype_mtf extends question_type {
         $fs = get_file_storage();
 
         $rowids = $DB->get_records_menu('qtype_mtf_rows',
-        array('questionid' => $questionid
-        ), 'id', 'id,1');
+                array('questionid' => $questionid
+                ), 'id', 'id,1');
         foreach ($rowids as $rowid => $notused) {
             $fs->move_area_files_to_new_context($oldcontextid, $newcontextid, 'qtype_mtf',
-            'optiontext', $rowid);
+                    'optiontext', $rowid);
             $fs->move_area_files_to_new_context($oldcontextid, $newcontextid, 'qtype_mtf',
-            'feedbacktext', $rowid);
+                    'feedbacktext', $rowid);
         }
     }
 
@@ -526,8 +530,8 @@ class qtype_mtf extends question_type {
         $fs = get_file_storage();
 
         $rowids = $DB->get_records_menu('qtype_mtf_rows',
-        array('questionid' => $questionid
-        ), 'id', 'id,1');
+                array('questionid' => $questionid
+                ), 'id', 'id,1');
 
         foreach ($rowids as $rowid => $notused) {
             $fs->delete_area_files($contextid, 'qtype_mtf', 'optiontext', $rowid);
@@ -558,7 +562,8 @@ class qtype_mtf extends question_type {
         $expout .= '    <numberofrows>' . $question->options->numberofrows . "</numberofrows>\n";
         $expout .= '    <numberofcolumns>' . $question->options->numberofcolumns .
                  "</numberofcolumns>\n";
-		$expout .= '    <answernumbering>' . $question->options->answernumbering . "</answernumbering>\n";
+        $expout .= '    <answernumbering>' . $question->options->answernumbering .
+                 "</answernumbering>\n";
 
         // Now we export the question rows (options).
         foreach ($question->options->rows as $row) {
@@ -630,20 +635,20 @@ class qtype_mtf extends question_type {
         $question->qtype = 'mtf';
 
         $question->scoringmethod = $format->getpath($data,
-        array('#', 'scoringmethod', 0, '#', 'text', 0, '#'
-        ), 'mtf');
+                array('#', 'scoringmethod', 0, '#', 'text', 0, '#'
+                ), 'mtf');
         $question->shuffleoptions = $format->trans_single(
-        $format->getpath($data, array('#', 'shuffleoptions', 0, '#'
-        ), 1));
+                $format->getpath($data, array('#', 'shuffleoptions', 0, '#'
+                ), 1));
         $question->numberofrows = $format->getpath($data,
-        array('#', 'numberofrows', 0, '#'
-        ), QTYPE_MTF_NUMBER_OF_OPTIONS);
+                array('#', 'numberofrows', 0, '#'
+                ), QTYPE_MTF_NUMBER_OF_OPTIONS);
         $question->numberofcolumns = $format->getpath($data,
-        array('#', 'numberofcolumns', 0, '#'
-        ), QTYPE_MTF_NUMBER_OF_RESPONSES);
+                array('#', 'numberofcolumns', 0, '#'
+                ), QTYPE_MTF_NUMBER_OF_RESPONSES);
         $question->answernumbering = $format->getpath($data,
-        array('#', 'answernumbering', 0, '#'
-        ), 'none');
+                array('#', 'answernumbering', 0, '#'
+                ), 'none');
 
         $rows = $data['#']['row'];
         $i = 1;
@@ -653,11 +658,11 @@ class qtype_mtf extends question_type {
 
             $question->{'option_' . $number} = array();
             $question->{'option_' . $number}['text'] = $format->getpath($row,
-            array('#', 'optiontext', 0, '#', 'text', 0, '#'
-            ), '', true);
+                    array('#', 'optiontext', 0, '#', 'text', 0, '#'
+                    ), '', true);
             $question->{'option_' . $number}['format'] = $format->trans_format(
-            $format->getpath($row, array('#', 'optiontext', 0, '@', 'format'
-            ), FORMAT_HTML));
+                    $format->getpath($row, array('#', 'optiontext', 0, '@', 'format'
+                    ), FORMAT_HTML));
 
             $question->{'option_' . $number}['files'] = array();
 
@@ -674,16 +679,16 @@ class qtype_mtf extends question_type {
 
             $question->{'feedback_' . $number} = array();
             $question->{'feedback_' . $number}['text'] = $format->getpath($row,
-            array('#', 'feedbacktext', 0, '#', 'text', 0, '#'
-            ), '', true);
+                    array('#', 'feedbacktext', 0, '#', 'text', 0, '#'
+                    ), '', true);
             $question->{'feedback_' . $number}['format'] = $format->trans_format(
-            $format->getpath($row, array('#', 'feedbacktext', 0, '@', 'format'
-            ), FORMAT_HTML));
+                    $format->getpath($row,
+                            array('#', 'feedbacktext', 0, '@', 'format'
+                            ), FORMAT_HTML));
 
             // Restore files in option feedback.
             $question->{'feedback_' . $number}['files'] = array();
-            $files = $format->getpath($row,
-            array('#', 'feedbacktext', 0, '#', 'file'
+            $files = $format->getpath($row, array('#', 'feedbacktext', 0, '#', 'file'
             ), array(), false);
 
             foreach ($files as $file) {
@@ -701,8 +706,8 @@ class qtype_mtf extends question_type {
             $number = $format->getpath($column, array('@', 'number'
             ), $j++);
             $question->{'responsetext_' . $number} = $format->getpath($column,
-            array('#', 'responsetext', 0, '#', 'text', 0, '#'
-            ), '', true);
+                    array('#', 'responsetext', 0, '#', 'text', 0, '#'
+                    ), '', true);
         }
 
         // Finally, import the weights.

@@ -8,18 +8,20 @@
 //
 // Moodle is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle. If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ *
  * @package qtype_mtf
  * @author Amr Hourani amr.hourani@id.ethz.ch
  * @copyright ETHz 2016 amr.hourani@id.ethz.ch
  */
 defined('MOODLE_INTERNAL') || die();
+
 
 class qtype_mtf_question extends question_graded_automatically_with_countback {
 
@@ -143,11 +145,11 @@ class qtype_mtf_question extends question_graded_automatically_with_countback {
     public function weight($row = null, $col = null) {
         $rownumber = is_object($row) ? $row->number : $row;
         $colnumber = is_object($col) ? $col->number : $col;
-		if (isset($this->weights[$rownumber][$colnumber])) {
-			$weight = (float) $this->weights[$rownumber][$colnumber]->weight;
-		} else {
-			$weight = 0;
-		}
+        if (isset($this->weights[$rownumber][$colnumber])) {
+            $weight = (float) $this->weights[$rownumber][$colnumber]->weight;
+        } else {
+            $weight = 0;
+        }
 
         return $weight;
     }
@@ -223,8 +225,8 @@ class qtype_mtf_question extends question_graded_automatically_with_countback {
                 foreach ($this->columns as $column) {
                     if ($column->number == $response[$field]) {
                         $result[] = $this->html_to_text($row->optiontext, $row->optiontextformat) .
-                        ': ' . $this->html_to_text($column->responsetext,
-                        $column->responsetextformat);
+                                 ': ' . $this->html_to_text($column->responsetext,
+                                        $column->responsetextformat);
                     }
                 }
             }
@@ -241,7 +243,7 @@ class qtype_mtf_question extends question_graded_automatically_with_countback {
     public function classify_response(array $response) {
         // See which column numbers have been selected.
         $selectedcolumns = array();
-		$weights = $this->weights;
+        $weights = $this->weights;
         foreach ($this->order as $key => $rowid) {
             $field = $this->field($key);
             $row = $this->rows[$rowid];
@@ -249,38 +251,42 @@ class qtype_mtf_question extends question_graded_automatically_with_countback {
             if (array_key_exists($field, $response) && $response[$field]) {
                 $selectedcolumns[$rowid] = $response[$field];
             } else {
-				$selectedcolumns[$rowid] = 0;
+                $selectedcolumns[$rowid] = 0;
             }
         }
 
-		$parts = array();
+        $parts = array();
 
-		if (count($this->columns) == 1) { // SC
-			$sele = 0;
-			foreach($selectedcolumns as $k=>$v){
-				if ($selectedcolumns[$k] == 1){
-					$sele = $k;
-					break;
-				}
-			}
-			if ($sele == 0) { // Nothing Selected..
-				return array($this->id => question_classified_response::no_response());
-			}
-			$choiceid = $sele;
-			$ans = $this->rows[$choiceid];
-			foreach ($this->columns as $colid => $col) {
-				$column = $col;
-				if ($weights[$row->number][$column->number]->weight > 0) {
-						$correctreponse = '';
-						$partialcredit = 1;
-				} else {
-						$correctreponse = '';
-						$partialcredit = 0;
-				}
-			}
-			return array($this->id => new question_classified_response($choiceid,
-					$this->html_to_text($column->responsetext, $column->responsetextformat), $partialcredit));
-		}
+        if (count($this->columns) == 1) { // SC
+            $sele = 0;
+            foreach ($selectedcolumns as $k => $v) {
+                if ($selectedcolumns[$k] == 1) {
+                    $sele = $k;
+                    break;
+                }
+            }
+            if ($sele == 0) { // Nothing Selected..
+                return array($this->id => question_classified_response::no_response()
+                );
+            }
+            $choiceid = $sele;
+            $ans = $this->rows[$choiceid];
+            foreach ($this->columns as $colid => $col) {
+                $column = $col;
+                if ($weights[$row->number][$column->number]->weight > 0) {
+                    $correctreponse = '';
+                    $partialcredit = 1;
+                } else {
+                    $correctreponse = '';
+                    $partialcredit = 0;
+                }
+            }
+            return array(
+                $this->id => new question_classified_response($choiceid,
+                        $this->html_to_text($column->responsetext, $column->responsetextformat),
+                        $partialcredit)
+            );
+        }
         // Now calculate the classification for MTF.
         foreach ($this->rows as $rowid => $row) {
             $field = $this->field($key);
@@ -296,7 +302,7 @@ class qtype_mtf_question extends question_graded_automatically_with_countback {
                     break;
                 }
             }
-			if (empty($column)) {
+            if (empty($column)) {
                 $parts[$rowid] = question_classified_response::no_response();
                 continue;
             }
@@ -310,12 +316,11 @@ class qtype_mtf_question extends question_graded_automatically_with_countback {
                      $this->weights[$row->number][$column->number]->weight > 0) {
                 $partialcredit = 1 / count($this->rows);
             }
-			$parts[$rowid] = new question_classified_response($column->id, $column->responsetext, $partialcredit);
-
+            $parts[$rowid] = new question_classified_response($column->id, $column->responsetext,
+                    $partialcredit);
         }
 
-		return $parts;
-
+        return $parts;
     }
 
     /**
@@ -385,7 +390,7 @@ class qtype_mtf_question extends question_graded_automatically_with_countback {
         global $CFG;
         $type = $this->scoringmethod;
         $gradingclass = 'qtype_mtf_grading_' . $type;
-        require_once($CFG->dirroot . '/question/type/mtf/grading/' . $gradingclass . '.class.php');
+        require_once ($CFG->dirroot . '/question/type/mtf/grading/' . $gradingclass . '.class.php');
 
         return new $gradingclass();
     }
@@ -404,7 +409,8 @@ class qtype_mtf_question extends question_graded_automatically_with_countback {
         $grade = $this->grading()->grade_question($this, $response);
         $state = question_state::graded_state_for_fraction($grade);
 
-        return array($grade, $state);
+        return array($grade, $state
+        );
     }
 
     /**
@@ -513,7 +519,8 @@ class qtype_mtf_question extends question_graded_automatically_with_countback {
         } else if ($component == 'qtype_mtf' && $filearea == 'feedbacktext') {
             return true;
         } else if ($component == 'question' && in_array($filearea,
-          array('correctfeedback', 'partiallycorrectfeedback', 'incorrectfeedback'))) {
+                array('correctfeedback', 'partiallycorrectfeedback', 'incorrectfeedback'
+                ))) {
             return $this->check_combined_feedback_file_access($qa, $options, $filearea);
         } else if ($component == 'question' && $filearea == 'hint') {
             return $this->check_hint_file_access($qa, $options, $args);
