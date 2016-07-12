@@ -21,7 +21,7 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
-define('QTYPE_MTF_NUMBER_OF_OPTIONS', 3);
+define('QTYPE_MTF_NUMBER_OF_OPTIONS', 4);
 define('QTYPE_MTF_NUMBER_OF_RESPONSES', 2);
 
 /**

@@ -213,7 +213,7 @@ class qtype_mtf_edit_form extends question_edit_form {
         if (isset($this->question->options->rows) && count($this->question->options->rows) > 0) {
             $this->numberofrows = count($this->question->options->rows);
         } else {
-            $this->numberofrows = 3;
+            $this->numberofrows = 4;
         }
         if (isset($this->question->options->columns) && count($this->question->options->columns) > 0) {
             $this->numberofcolumns = count($this->question->options->columns);
@@ -225,14 +225,14 @@ class qtype_mtf_edit_form extends question_edit_form {
         $mform->setType('numberofcolumns', PARAM_INT);
 
 		$numberoptionsmenu = array();
-		for ($i = 2; $i <= 10; $i++) {
+		for ($i = 1; $i <= 15; $i++) {
 			$numberoptionsmenu[$i] = $i;
 		}
 
 		$numoptionsdisabled = array();
 		$mform->addElement('select', 'numberofrows',
         get_string('numberofrows', 'qtype_mtf'), $numberoptionsmenu,$numoptionsdisabled);
-        $mform->setDefault('numberofrows', 3);
+        $mform->setDefault('numberofrows', 4);
         $mform->addHelpButton('numberofrows', 'numberofrows', 'qtype_mtf');
 
 		$mform->addElement('header', 'scoringmethodheader',
@@ -296,7 +296,7 @@ class qtype_mtf_edit_form extends question_edit_form {
         }
 
         // Add an option text editor, response radio buttons and a feedback editor for each option.
-        for ($i = 1; $i <= 10; ++$i) {
+        for ($i = 1; $i <= 15; ++$i) {
             // Add the option editor.
             $mform->addElement('html', '<div class="optionbox" id="qtype_mtf_optionbox_response_'.$i.'">'); // Open div.optionbox.
             $mform->addElement('html', '<div class="optionandresponses">'); // Open div.optionbox.
@@ -305,7 +305,7 @@ class qtype_mtf_edit_form extends question_edit_form {
             $mform->addElement('html',
                     '<label class="optiontitle">' . get_string('optionno', 'qtype_mtf', $i) .
                              '</label>');
-            $mform->addElement('editor', 'option_' . $i, '', array('rows' => 8
+            $mform->addElement('editor', 'option_' . $i, '', array('rows' => 3
             ), $this->editoroptions);
             $mform->setDefault('option_' . $i,
             array('text' => get_string('enteroptionhere', 'qtype_mtf')));
@@ -349,7 +349,7 @@ class qtype_mtf_edit_form extends question_edit_form {
             '<label class="feedbacktitle">' .
             get_string('feedbackforoption', 'qtype_mtf', $i) . '</label>');
             $mform->addElement('editor', 'feedback_' . $i, '',
-            array('rows' => 2, 'placeholder' => ''), $this->editoroptions);
+            array('rows' => 1, 'placeholder' => ''), $this->editoroptions);
             $mform->setType('feedback_' . $i, PARAM_RAW);
 
             $mform->addElement('html', '</div>'); // Close div.feedbacktext.
