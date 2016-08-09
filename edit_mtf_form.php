@@ -156,8 +156,9 @@ class qtype_mtf_edit_form extends question_edit_form {
         $mform->addElement('select', 'answernumbering', get_string('answernumbering', 'qtype_mtf'),
                 qtype_mtf::get_numbering_styles());
         if (!empty($this->question->options->answernumbering)) {
-            $mform->setDefault('answernumbering', array($this->question->options->answernumbering
-            ));
+            $mform->setDefault('answernumbering',
+                    array($this->question->options->answernumbering
+                    ));
         }
         // Any questiontype specific fields.
         $this->definition_inner($mform);
@@ -193,8 +194,9 @@ class qtype_mtf_edit_form extends question_edit_form {
                 $a = new stdClass();
                 $a->time = userdate($this->question->timemodified);
                 $a->user = fullname(
-                        $DB->get_record('user', array('id' => $this->question->modifiedby
-                        )));
+                        $DB->get_record('user',
+                                array('id' => $this->question->modifiedby
+                                )));
                 $mform->addElement('static', 'modified', get_string('modified', 'question'),
                         get_string('byandon', 'question', $a));
             }
@@ -215,8 +217,9 @@ class qtype_mtf_edit_form extends question_edit_form {
 
         if ((!empty($this->question->id)) && (!($this->question->formoptions->canedit ||
                  $this->question->formoptions->cansaveasnew))) {
-            $mform->hardFreezeAllVisibleExcept(array('categorymoveto', 'buttonar', 'currentgrp'
-            ));
+            $mform->hardFreezeAllVisibleExcept(
+                    array('categorymoveto', 'buttonar', 'currentgrp'
+                    ));
         }
 
         $this->add_hidden_fields();
@@ -242,8 +245,9 @@ class qtype_mtf_edit_form extends question_edit_form {
             $this->numberofcolumns = 2;
         }
         $this->editoroptions['changeformat'] = 1;
-        $mform->addElement('hidden', 'numberofcolumns', '2', array('id' => 'id_numberofcolumns'
-        ));
+        $mform->addElement('hidden', 'numberofcolumns', '2',
+                array('id' => 'id_numberofcolumns'
+                ));
         $mform->setType('numberofcolumns', PARAM_INT);
 
         $numberoptionsmenu = array();
@@ -293,8 +297,9 @@ class qtype_mtf_edit_form extends question_edit_form {
             if ($i == 1) {
                 $label = get_string('responsetexts', 'qtype_mtf');
             }
-            $mform->addElement('text', 'responsetext_' . $i, $label, array('size' => 6
-            ));
+            $mform->addElement('text', 'responsetext_' . $i, $label,
+                    array('size' => 6
+                    ));
             $mform->setType('responsetext_' . $i, PARAM_TEXT);
             $mform->addRule('responsetext_' . $i, null, 'required', null, 'client');
 
@@ -324,7 +329,7 @@ class qtype_mtf_edit_form extends question_edit_form {
             // Add the option editor.
             $mform->addElement('html',
                     '<div class="optionbox" id="qtype_mtf_optionbox_response_' . $i . '">'); // Open
-                                                                                                                    // div.optionbox.
+                                                                                             // div.optionbox.
             $mform->addElement('html', '<div class="optionandresponses">'); // Open div.optionbox.
 
             $mform->addElement('html', '<div class="optiontext">'); // Open div.optiontext.

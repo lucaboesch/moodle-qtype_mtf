@@ -246,8 +246,9 @@ class qtype_mtf extends question_type {
         // Delete any left over old columns.
         foreach ($oldcolumns as $oldcolumn) {
             if (!in_array($oldcolumn->id, $newcols)) {
-                $DB->delete_records('qtype_mtf_columns', array('id' => $oldcolumn->id
-                ));
+                $DB->delete_records('qtype_mtf_columns',
+                        array('id' => $oldcolumn->id
+                        ));
             }
         }
 
@@ -289,8 +290,9 @@ class qtype_mtf extends question_type {
         // Delete any left over old weights.
         foreach ($oldweightrecords as $oldweightrecord) {
             if (!in_array($oldweightrecord->id, $newweights)) {
-                $DB->delete_records('qtype_mtf_weights', array('id' => $oldweightrecord->id
-                ));
+                $DB->delete_records('qtype_mtf_weights',
+                        array('id' => $oldweightrecord->id
+                        ));
             }
         }
     }
@@ -374,13 +376,13 @@ class qtype_mtf extends question_type {
                 }
             }
         }
-		if ($scoring == 'mtfonezero') {
-			return pow ( 0.5, count ( $question->rows ) );
-		} else if ($scoring == 'subpoints') {
-			return 0.5;
-		} else {
-			return 0.00;
-		}
+        if ($scoring == 'mtfonezero') {
+            return pow(0.5, count($question->rows));
+        } else if ($scoring == 'subpoints') {
+            return 0.5;
+        } else {
+            return 0.00;
+        }
     }
 
     /**
@@ -392,30 +394,35 @@ class qtype_mtf extends question_type {
         $question = $this->make_question($questiondata);
         $weights = $question->weights;
         $parts = array();
-		foreach ( $question->rows as $rowid => $row ) {
-			$choices = array ();
-			foreach ( $question->columns as $columnid => $column ) {
-				// Calculate the partial credit.
-				if ($question->scoringmethod == 'subpoints') {
-					$partialcredit = 0.0;
-				} else {
-					$partialcredit = - 0.999; // Due to non-linear math.
-				}
-				if (($question->scoringmethod == 'subpoints') && $weights [$row->number] [$column->number]->weight > 0) {
-					$partialcredit = 1 / count ( $question->rows );
-				}
-				$correctreponse = '';
-				if ($weights [$row->number] [$column->number]->weight > 0) { // Is it correct
-				                                                           // Response?
-					$correctreponse = ' (' . get_string ( 'correctresponse', 'qtype_mtf' ) . ')';
-				}
-				$choices [$columnid] = new question_possible_response ( question_utils::to_plain_text ( $row->optiontext, $row->optiontextformat ) . ': ' . question_utils::to_plain_text ( $column->responsetext . $correctreponse, $column->responsetextformat ), $partialcredit );
-			}
-			$choices [null] = question_possible_response::no_response ();
-			
-			$parts [$rowid] = $choices;
-		}
-            return $parts;
+        foreach ($question->rows as $rowid => $row) {
+            $choices = array();
+            foreach ($question->columns as $columnid => $column) {
+                // Calculate the partial credit.
+                if ($question->scoringmethod == 'subpoints') {
+                    $partialcredit = 0.0;
+                } else {
+                    $partialcredit = -0.999; // Due to non-linear math.
+                }
+                if (($question->scoringmethod == 'subpoints') &&
+                         $weights[$row->number][$column->number]->weight > 0) {
+                    $partialcredit = 1 / count($question->rows);
+                }
+                $correctreponse = '';
+                if ($weights[$row->number][$column->number]->weight > 0) { // Is it correct
+                                                                           // Response?
+                    $correctreponse = ' (' . get_string('correctresponse', 'qtype_mtf') . ')';
+                }
+                $choices[$columnid] = new question_possible_response(
+                        question_utils::to_plain_text($row->optiontext, $row->optiontextformat) .
+                                 ': ' . question_utils::to_plain_text(
+                                        $column->responsetext . $correctreponse,
+                                        $column->responsetextformat), $partialcredit);
+            }
+            $choices[null] = question_possible_response::no_response();
+
+            $parts[$rowid] = $choices;
+        }
+        return $parts;
     }
 
     /**
@@ -625,8 +632,9 @@ class qtype_mtf extends question_type {
                     array('#', 'optiontext', 0, '#', 'text', 0, '#'
                     ), '', true);
             $question->{'option_' . $number}['format'] = $format->trans_format(
-                    $format->getpath($row, array('#', 'optiontext', 0, '@', 'format'
-                    ), FORMAT_HTML));
+                    $format->getpath($row,
+                            array('#', 'optiontext', 0, '@', 'format'
+                            ), FORMAT_HTML));
 
             $question->{'option_' . $number}['files'] = array();
 

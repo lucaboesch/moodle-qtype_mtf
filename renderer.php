@@ -110,16 +110,14 @@ class qtype_mtf_renderer extends qtype_renderer {
         // Add empty header for option texts.
         // $table->head[] = '';
 
-        // Add the response texts as table headers if question is not single choice.
-        if (count($question->columns) > 1) {
-            foreach ($question->columns as $column) {
-                $cell = new html_table_cell(
-                        $question->make_html_inline(
-                                $question->format_text($column->responsetext,
-                                        $column->responsetextformat, $qa, 'question', 'response',
-                                        $column->id)));
-                $table->head[] = $cell;
-            }
+        // Add the response texts as table headers.
+        foreach ($question->columns as $column) {
+            $cell = new html_table_cell(
+                    $question->make_html_inline(
+                            $question->format_text($column->responsetext,
+                                    $column->responsetextformat, $qa, 'question', 'response',
+                                    $column->id)));
+            $table->head[] = $cell;
         }
 
         // Add empty header for correctness if needed.
@@ -151,28 +149,16 @@ class qtype_mtf_renderer extends qtype_renderer {
                 if (array_key_exists($field, $response) && ($response[$field] == $column->number)) {
                     $ischecked = true;
                 }
-                if (count($question->columns) > 1) {
-                    $datamulti = 'data-multimtf="1"';
-                    $singleormulti = 2;
-                } else {
-                    $datamulti = 'data-multimtf="0"';
-                    $singleormulti = 1;
-                }
+                $datamulti = 'data-multimtf="1"';
+                $singleormulti = 2; // Multi.
+
                 $radio = $this->radiobutton($buttonname, $column->number, $ischecked, $isreadonly,
                         $buttonid, $datacol, $datamulti, $singleormulti, $qtype_mtf_id);
                 // Show correctness icon with radio button if needed.
-                if (count($question->columns) > 1) {
-                    if ($displayoptions->correctness) {
-                        $weight = $question->weight($row->number, $column->number);
-                        $radio .= '<span class="mtfgreyingout">' .
-                                 $this->feedback_image($weight > 0.0) . '</span>';
-                    }
-                } else {
-                    if ($displayoptions->correctness && $ischecked == true) {
-                        $weight = $question->weight($row->number, $column->number);
-                        $radio .= '<span class="mtfgreyingout">' .
-                                 $this->feedback_image($weight > 0.0) . '</span>';
-                    }
+                if ($displayoptions->correctness) {
+                    $weight = $question->weight($row->number, $column->number);
+                    $radio .= '<span class="mtfgreyingout">' . $this->feedback_image($weight > 0.0) .
+                             '</span>';
                 }
                 $cell = new html_table_cell($radio);
                 $cell->attributes['class'] = 'mtfresponsebutton';
@@ -194,70 +180,31 @@ class qtype_mtf_renderer extends qtype_renderer {
             $isselected = $question->is_answered($response, $key);
             // For correctness we have to grade the option...
             if ($displayoptions->correctness) {
-                if (count($question->columns) > 1) {
-                    $rowgrade = $question->grading()->grade_row($question, $key, $row, $response);
-                    $cell = new html_table_cell($this->feedback_image($rowgrade));
-                    $cell->attributes['class'] = 'mtfcorrectness';
-                    $rowdata[] = $cell;
-                } else {
-                    if ($ischecked == true) {
-                        $rowgrade = $question->grading()->grade_row($question, $key, $row,
-                                $response);
-                        $cell = new html_table_cell($this->feedback_image($rowgrade));
-                        $cell->attributes['class'] = 'mtfcorrectness';
-                        $rowdata[] = $cell;
-                    } else {
-                        $rowgrade = '';
-                        $cell = new html_table_cell('');
-                        $cell->attributes['class'] = 'mtfcorrectness';
-                        $rowdata[] = $cell;
-                    }
-                }
+                $rowgrade = $question->grading()->grade_row($question, $key, $row, $response);
+                $cell = new html_table_cell($this->feedback_image($rowgrade));
+                $cell->attributes['class'] = 'mtfcorrectness';
+                $rowdata[] = $cell;
             }
-            if (count($question->columns) > 1) {
-                // Add the feedback to the table, if it is visible.
-                if ($displayoptions->feedback && empty($displayoptions->suppresschoicefeedback) &&
-                         $isselected && trim($row->optionfeedback)) {
-                    $cell = new html_table_cell(
-                            html_writer::tag('div',
-                                    $question->make_html_inline(
-                                            $question->format_text($row->optionfeedback,
-                                                    $row->optionfeedbackformat, $qa, 'qtype_mtf',
-                                                    'feedbacktext', $rowid)),
-                                    array('class' => 'mtfspecificfeedback'
-                                    )));
+            // Add the feedback to the table, if it is visible.
+            if ($displayoptions->feedback && empty($displayoptions->suppresschoicefeedback) &&
+                     $isselected && trim($row->optionfeedback)) {
+                $cell = new html_table_cell(
+                        html_writer::tag('div',
+                                $question->make_html_inline(
+                                        $question->format_text($row->optionfeedback,
+                                                $row->optionfeedbackformat, $qa, 'qtype_mtf',
+                                                'feedbacktext', $rowid)),
+                                array('class' => 'mtfspecificfeedback'
+                                )));
 
-                    $rowdata[] = $cell;
-                } else {
-                    $cell = new html_table_cell(html_writer::tag('div', ''));
-                    $rowdata[] = $cell;
-                }
-            } else { // Single Choice
-                     // Add the feedback to the table, if it is visible.
-                if ($displayoptions->feedback && empty($displayoptions->suppresschoicefeedback) &&
-                         $isselected && trim($row->optionfeedback)) {
-                    if ($ischecked == true) {
-                        $feedback_str = $question->format_text($row->optionfeedback,
-                                $row->optionfeedbackformat, $qa, 'qtype_mtf', 'feedbacktext', $rowid);
-                    } else {
-                        $feedback_str = '';
-                    }
-                    $cell = new html_table_cell(
-                            html_writer::tag('div',
-                                    $question->make_html_inline($feedback_str),
-                                    array('class' => 'mtfspecificfeedback'
-                                    )));
-
-                    $rowdata[] = $cell;
-                } else {
-                    $cell = new html_table_cell(html_writer::tag('div', ''));
-                    $rowdata[] = $cell;
-                }
+                $rowdata[] = $cell;
+            } else {
+                $cell = new html_table_cell(html_writer::tag('div', ''));
+                $rowdata[] = $cell;
             }
             $rowmo = new html_table_row($rowdata);
             $rowmo->attributes['data-id'] = '2';
-            $rowmo->attributes['class'] = 'amroooo';
-            $rowmo->attributes['id'] = 'what the hellp';
+            $rowmo->attributes['class'] = 'qtype_mtf_row';
             $table->data[] = $rowmo;
         }
 
@@ -285,17 +232,8 @@ class qtype_mtf_renderer extends qtype_renderer {
         if ($id == '') {
             $id = $name;
         }
-        if ($singleormulti >= 2) {
-            $result .= '<input type="radio" id="' . $id . '" name="' . $name . '" value="' . $value .
-                     '" ' . $checked . ' ' . $readonly . ' ' . $datacol . ' ' . $datamulti . '/>';
-        } else {
-
-            $result .= '<input type="hidden" id="hidden_' . $id . '" name="' . $name .
-                     '" value="2" data-hiddenmtf="' . $qtype_mtf_id . '" disabled="disabled">';
-
-            $result .= '<input type="radio" id="' . $id . '" name="' . $name . '" value="' . $value .
-                     '" ' . $checked . ' ' . $readonly . ' ' . $datacol . ' ' . $datamulti . '/>';
-        }
+        $result .= '<input type="radio" id="' . $id . '" name="' . $name . '" value="' . $value .
+                 '" ' . $checked . ' ' . $readonly . ' ' . $datacol . ' ' . $datamulti . '/>';
         return $result;
     }
 
