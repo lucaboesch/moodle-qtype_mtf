@@ -58,7 +58,7 @@ $starttime = time();
 $sql = "SELECT q.*
         FROM {question} q
         WHERE q.qtype = 'multichoice'
-		and single = '0'
+        and q.id in (select questionid from {qtype_multichoice_options} where single = '0')
         ";
 $params = array();
 
@@ -134,9 +134,8 @@ foreach ($questions as $question) {
 
     // Retrieve rows and columns and count them.
     $multichoice = $DB->get_record('qtype_multichoice_options',
-            array('questionid' => $oldquestionid
+            array('questionid' => $oldquestionid, 'single' => 0
             ));
-
     $rows = $DB->get_records('question_answers', array('question' => $question->id
     ), ' id ASC ');
     $rowids = array_keys($rows);
@@ -171,7 +170,6 @@ foreach ($questions as $question) {
                      "<a href='$CFG->wwwroot/question/preview.php?id=$question->id' target='_blank'>" .
                      $question->id . "</a> would be migrated!<br/>\n";
         }
-        // echo shorten_text($question->questiontext, 100, false, '...');
         continue;
     } else {
         echo "<br/>\n" .
