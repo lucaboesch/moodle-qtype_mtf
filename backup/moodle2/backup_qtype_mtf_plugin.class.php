@@ -68,14 +68,18 @@ class backup_qtype_mtf_plugin extends backup_qtype_plugin {
         $columns->add_child($column);
         $weights->add_child($weight);
         // Set sources to populate the data.
-        $mtf->set_source_table('qtype_mtf_options', array('questionid' => backup::VAR_PARENTID
-        ));
-        $row->set_source_table('qtype_mtf_rows', array('questionid' => backup::VAR_PARENTID
-        ), 'number ASC');
-        $column->set_source_table('qtype_mtf_columns', array('questionid' => backup::VAR_PARENTID
-        ), 'number ASC');
-        $weight->set_source_table('qtype_mtf_weights', array('questionid' => backup::VAR_PARENTID
-        ));
+        $mtf->set_source_table('qtype_mtf_options',
+                array('questionid' => backup::VAR_PARENTID
+                ));
+        $row->set_source_table('qtype_mtf_rows',
+                array('questionid' => backup::VAR_PARENTID
+                ), 'number ASC');
+        $column->set_source_table('qtype_mtf_columns',
+                array('questionid' => backup::VAR_PARENTID
+                ), 'number ASC');
+        $weight->set_source_table('qtype_mtf_weights',
+                array('questionid' => backup::VAR_PARENTID
+                ));
         // We don't need to annotate ids nor files.
         return $plugin;
     }

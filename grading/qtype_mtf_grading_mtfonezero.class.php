@@ -53,11 +53,11 @@ class qtype_mtf_grading_mtfonezero extends qtype_mtf_grading {
         }
         // mtf1/0: if all responses are correct => all points, else 0 points.
         // i.e. points = if (correct_responses == num_options) then max_points else 0.
-        
-         if ($correctrows == $question->numberofrows) {
-             return 1;
-         } else {
-             return 0;
-         }
+
+        if ($correctrows == $question->numberofrows) {
+            return 1;
+        } else {
+            return 0;
+        }
     }
 }
