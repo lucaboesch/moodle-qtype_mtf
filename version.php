@@ -23,8 +23,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'qtype_mtf';
-$plugin->version = 2016081900;
+$plugin->version = 2016082200;
 $plugin->requires = 2013111904; // Moodle >=2.6.4.
 
 $plugin->maturity = MATURITY_STABLE;
-$plugin->release = '1.7 for Moodle 2.6+';
+$plugin->release = '1.8 for Moodle 2.6+';
