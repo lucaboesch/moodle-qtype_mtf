@@ -521,6 +521,8 @@ class qtype_mtf extends question_type {
      * @return string the data to append to the output buffer or false if error
      */
     public function export_to_xml($question, qformat_xml $format, $extra = null) {
+        // Raise memory limit due to huge number or content for this question type.
+        raise_memory_limit(MEMORY_EXTRA);
         $expout = '';
         $fs = get_file_storage();
         $contextid = $question->contextid;
@@ -601,7 +603,8 @@ class qtype_mtf extends question_type {
         if (!isset($data['@']['type']) || $data['@']['type'] != 'mtf') {
             return false;
         }
-
+        // Raise memory limit due to huge number or content for this question type.
+        raise_memory_limit(MEMORY_EXTRA);
         $question = $format->import_headers($data);
         $question->qtype = 'mtf';
 
