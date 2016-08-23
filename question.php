@@ -290,37 +290,6 @@ class qtype_mtf_question extends question_graded_automatically_with_countback {
         }
 
         $parts = array();
-
-        if (count($this->columns) == 1) { // SC
-            $sele = 0;
-            foreach ($selectedcolumns as $k => $v) {
-                if ($selectedcolumns[$k] == 1) {
-                    $sele = $k;
-                    break;
-                }
-            }
-            if ($sele == 0) { // Nothing Selected..
-                return array($this->id => question_classified_response::no_response()
-                );
-            }
-            $choiceid = $sele;
-            $ans = $this->rows[$choiceid];
-            foreach ($this->columns as $colid => $col) {
-                $column = $col;
-                if ($weights[$row->number][$column->number]->weight > 0) {
-                    $correctreponse = '';
-                    $partialcredit = 1;
-                } else {
-                    $correctreponse = '';
-                    $partialcredit = 0;
-                }
-            }
-            return array(
-                $this->id => new question_classified_response($choiceid,
-                        $this->html_to_text($column->responsetext, $column->responsetextformat),
-                        $partialcredit)
-            );
-        }
         // Now calculate the classification for MTF.
         foreach ($this->rows as $rowid => $row) {
             $field = $this->field($key);
