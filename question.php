@@ -41,6 +41,8 @@ class qtype_mtf_question extends question_graded_automatically_with_countback {
 
     public $order = null;
 
+    public $editedquestion;
+
     // All the methods needed for option shuffling.
     /**
      * (non-PHPdoc).
@@ -62,6 +64,25 @@ class qtype_mtf_question extends question_graded_automatically_with_countback {
      */
     public function apply_attempt_state(question_attempt_step $step) {
         $this->order = explode(',', $step->get_qt_var('_order'));
+
+        // Add any missing answers. Sometimes people edit questions after they
+        // have been attempted which breaks things.
+        // Retrieve the question rows (mtf options).
+
+        if (!isset($this->rows[$this->order[0]])) {
+            global $DB;
+            $rows = $DB->get_records('qtype_mtf_rows',
+                    array('questionid' => $this->id
+                    ), 'number ASC', 'id, number', 0, $this->numberofrows);
+
+            $arr = array();
+            foreach ($rows as $r) {
+                $arr[$r->number - 1] = $r->id;
+            }
+            unset($this->order);
+            $this->order = $arr;
+            $this->editedquestion = 1;
+        }
     }
 
     /**
@@ -174,14 +195,19 @@ class qtype_mtf_question extends question_graded_automatically_with_countback {
      * @return bool whether this response is a complete answer to this question.
      */
     public function is_complete_response(array $response) {
-        // A response is complete if a field exists in the response for every row.
-        foreach ($this->order as $key => $rowid) {
-            if (!isset($response[$this->field($key)])) {
-                return false;
-            }
+        if (count($response) == count($this->rows)) {
+            return true;
+        } else {
+            return false;
         }
+    }
 
-        return true;
+    public function is_gradable_response(array $response) {
+        if (count($response) == 0) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     /**
@@ -199,12 +225,20 @@ class qtype_mtf_question extends question_graded_automatically_with_countback {
     }
 
     /**
-     * (non-PHPdoc).
      *
-     * @see question_graded_automatically::is_gradable_response()
+     * @param array $response responses, as returned by
+     *        {@link question_attempt_step::get_qt_data()}.
+     * @return int the number of choices that were selected. in this response.
      */
-    public function is_gradable_response(array $response) {
-        return true;
+    public function get_num_selected_choices(array $response) {
+        $numselected = 0;
+        foreach ($response as $key => $value) {
+            // Response keys starting with _ are internal values like _order, so ignore them.
+            if (!empty($value) && $key[0] != '_') {
+                $numselected += 1;
+            }
+        }
+        return $numselected;
     }
 
     /**
@@ -509,11 +543,36 @@ class qtype_mtf_question extends question_graded_automatically_with_countback {
     }
 
     /**
+     * Disable those hint settings that we don't want when the student has selected
+     * more choices than the number of right choices.
+     * This avoids giving the game away.
+     *
+     * @param question_hint_with_parts $hint a hint.
+     */
+    protected function disable_hint_settings_when_too_many_selected(question_hint_with_parts $hint) {
+        $hint->clearwrong = false;
+    }
+
+    public function get_hint($hintnumber, question_attempt $qa) {
+        $hint = parent::get_hint($hintnumber, $qa);
+        if (is_null($hint)) {
+            return $hint;
+        }
+
+        if ($this->get_num_selected_choices($qa->get_last_qt_data()) >
+                 $this->get_num_correct_choices()) {
+            $hint = clone ($hint);
+            $this->disable_hint_settings_when_too_many_selected($hint);
+        }
+        return $hint;
+    }
+
+    /**
      * (non-PHPdoc).
      *
      * @see question_definition::check_file_access()
      */
-    public function check_file_access($qa, $options, $component, $filearea, $args, $forcedownload) {
+    public function check_file_access($qa, $options, $component, $filearea, $args, $forcedownload) { // print_error("looolo".print_r($args));
         if ($component == 'qtype_mtf' && $filearea == 'optiontext') {
             return true;
         } else if ($component == 'qtype_mtf' && $filearea == 'feedbacktext') {
@@ -521,7 +580,11 @@ class qtype_mtf_question extends question_graded_automatically_with_countback {
         } else if ($component == 'question' && in_array($filearea,
                 array('correctfeedback', 'partiallycorrectfeedback', 'incorrectfeedback'
                 ))) {
-            return $this->check_combined_feedback_file_access($qa, $options, $filearea);
+            if ($this->editedquestion == 1) {
+                return true;
+            } else {
+                return $this->check_combined_feedback_file_access($qa, $options, $filearea);
+            }
         } else if ($component == 'question' && $filearea == 'hint') {
             return $this->check_hint_file_access($qa, $options, $args);
         } else {
