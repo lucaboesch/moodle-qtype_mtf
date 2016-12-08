@@ -251,7 +251,7 @@ class qtype_mtf_edit_form extends question_edit_form {
         $mform->setType('numberofcolumns', PARAM_INT);
 
         $numberoptionsmenu = array();
-        for ($i = 1; $i <= 15; $i++) {
+        for ($i = 1; $i <= 10; $i++) {
             $numberoptionsmenu[$i] = $i;
         }
 
@@ -325,7 +325,7 @@ class qtype_mtf_edit_form extends question_edit_form {
         }
 
         // Add an option text editor, response radio buttons and a feedback editor for each option.
-        for ($i = 1; $i <= 15; ++$i) {
+        for ($i = 1; $i <= 10; ++$i) {
             // Add the option editor.
             $mform->addElement('html',
                     '<div class="optionbox" id="qtype_mtf_optionbox_response_' . $i . '">'); // Open

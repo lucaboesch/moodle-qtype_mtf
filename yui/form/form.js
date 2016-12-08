@@ -58,7 +58,7 @@
 			};
 			mtfnumberchanged = function(numberofrows, loadorchanged){
 				numberofrows = parseInt(numberofrows);
-				var maxmtfoptions = 15;
+				var maxmtfoptions = 10;
 				var allowedtochangeresult = 1;
 				var optionboxes = '#qtype_mtf_optionbox_response_';
 				var lasttimerows = $("input[name=qtype_mtf_lastnumberofcols]").val();
