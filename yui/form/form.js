@@ -57,8 +57,24 @@
 			
 			};
 			mtfnumberchanged = function(numberofrows, loadorchanged){
+				
+/*
+				 $.ajax({url: M.cfg.wwwroot+'/question/type/mtf/answers.php?numberofrows='+numberofrows,
+					    success: function (data) {
+					    	// this is executed when ajax call finished well
+					     //  alert('content of the executed page: ' + data);
+					        $( "#theanswerarea" ).append( data);
+					    },
+					    error: function (xhr, status, error) {
+					        // executed if something went wrong during call
+					        if (xhr.status > 0) alert('got error: ' + status); // status 0 - when load is interrupted
+					    }
+					});
+				 
+				$( "#theanswerarea" ).load(M.cfg.wwwroot+'/question/type/mtf/answers.php' );
+*/
 				numberofrows = parseInt(numberofrows);
-				var maxmtfoptions = 10;
+				var maxmtfoptions = 15;
 				var allowedtochangeresult = 1;
 				var optionboxes = '#qtype_mtf_optionbox_response_';
 				var lasttimerows = $("input[name=qtype_mtf_lastnumberofcols]").val();
@@ -122,7 +138,7 @@
 			// If firsttime loading, then tick first TRUE
 			if (!$('input[data-colmtf="positive"]:checked').val()) {
 				// Tick first TRUE
-				$('#id_weightbutton_1_1').prop('checked', true);
+				$('#id_weightbutton_0_1').prop('checked', true);
 			}		
 
 		

@@ -109,6 +109,7 @@ class qtype_mtf extends question_type {
         $question->options->rows = $DB->get_records('qtype_mtf_rows',
                 array('questionid' => $question->id
                 ), 'number ASC', '*', 0, $question->options->numberofrows);
+
         // Retrieve the question columns.
         $question->options->columns = $DB->get_records('qtype_mtf_columns',
                 array('questionid' => $question->id
@@ -119,10 +120,12 @@ class qtype_mtf extends question_type {
                 ), 'rownumber ASC, columnnumber ASC');
 
         foreach ($question->options->rows as $key => $row) {
-            $question->{'option_' . $row->number}['text'] = $row->optiontext;
-            $question->{'option_' . $row->number}['format'] = $row->optiontextformat;
-            $question->{'feedback_' . $row->number}['text'] = $row->optionfeedback;
-            $question->{'feedback_' . $row->number}['format'] = $row->optionfeedbackformat;
+            $indexcounter = $row->number - 1;
+            $question->option[$indexcounter]['text'] = $row->optiontext;
+            $question->option[$indexcounter]['format'] = $row->optiontextformat;
+
+            $question->feedback[$indexcounter]['text'] = $row->optionfeedback;
+            $question->feedback[$indexcounter]['format'] = $row->optionfeedbackformat;
         }
 
         foreach ($question->options->columns as $key => $column) {
@@ -130,8 +133,9 @@ class qtype_mtf extends question_type {
         }
 
         foreach ($weightrecords as $key => $weight) {
+            $windexcounter = $weight->rownumber - 1;
             if ($weight->weight == 1.0) {
-                $question->{'weightbutton_' . $weight->rownumber} = $weight->columnnumber;
+                $question->weightbutton[$windexcounter] = $weight->columnnumber;
             }
         }
         // Put the weight records into an array indexed by rownumber and columnnumber.
@@ -181,6 +185,45 @@ class qtype_mtf extends question_type {
         ), 'number ASC');
         $newrows = array();
 
+        // Get final number of rows in case some are empty (1 is mandatory though)
+        // Also get those records into new object array for future use
+        $countfilledrows = 0;
+        $newoptions = new stdClass();
+
+        for ($i = 1; $i <= $options->numberofrows; ++$i) {
+            $optiontext = $question->option[$i - 1]['text'];
+            // Remove HTML tags.
+            $optiontext = trim(strip_tags($optiontext, '<img><video><audio><iframe><embed>'));
+            // Remove newlines.
+            $optiontext = preg_replace("/[\r\n]+/i", '', $optiontext);
+            // Remove whitespaces and tabs.
+            $optiontext = preg_replace("/[\s\t]+/i", '', $optiontext);
+            // Also remove UTF-8 non-breaking whitespaces.
+            $optiontext = trim($optiontext, "\xC2\xA0\n");
+            // Now check whether the string is empty.
+            if (!empty($optiontext)) {
+                $newoptions->option[$countfilledrows] = $question->option[$i - 1];
+                $newoptions->feedback[$countfilledrows] = $question->feedback[$i - 1];
+                // Keep consistency of Feedback in case not available
+                if (empty($newoptions->feedback[$countfilledrows])) {
+                    $newoptions->feedback[$countfilledrows]['text'] = '';
+                    $newoptions->feedback[$countfilledrows]['type'] = '';
+                }
+                $newoptions->weightbutton[$countfilledrows] = $question->weightbutton[$i - 1];
+                $countfilledrows++;
+            }
+        }
+        unset($question->option);
+        unset($question->feedback);
+        unset($question->weightbutton);
+
+        // Update number of options to the ones that are filled :)
+        $options->numberofrows = $countfilledrows;
+
+        $question->option = $newoptions->option;
+        $question->feedback = $newoptions->feedback;
+        $question->weightbutton = $newoptions->weightbutton;
+
         for ($i = 1; $i <= $options->numberofrows; ++$i) {
             $row = array_shift($oldrows);
             if (!$row) {
@@ -196,14 +239,16 @@ class qtype_mtf extends question_type {
             }
 
             // Also save images in optiontext and feedback.
-            $optiondata = $question->{'option_' . $i};
+            $optiondata = $question->option[$i - 1];
+
             $row->optiontext = $this->import_or_save_files($optiondata, $context, 'qtype_mtf',
                     'optiontext', $row->id);
-            $row->optiontextformat = $question->{'option_' . $i}['format'];
-            $optionfeedback = $question->{'feedback_' . $i};
+            $row->optiontextformat = $question->option[$i - 1]['format'];
+
+            $optionfeedback = $question->feedback[$i - 1];
             $row->optionfeedback = $this->import_or_save_files($optionfeedback, $context,
                     'qtype_mtf', 'feedbacktext', $row->id);
-            $row->optionfeedbackformat = $question->{'feedback_' . $i}['format'];
+            $row->optionfeedbackformat = $question->feedback[$i - 1]['format'];
 
             $DB->update_record('qtype_mtf_rows', $row);
 
@@ -274,8 +319,12 @@ class qtype_mtf extends question_type {
                 }
 
                 // Perform the weight update.
-                if (property_exists($question, 'weightbutton_' . $i)) {
-                    if ($question->{'weightbutton_' . $i} == $j) {
+                $windex = $i - 1;
+                if ($question->weightbutton[$windex]) { /*
+                                                         * property_exists($question,
+                                                         * 'weightbutton[' . $windex . ']')
+                                                         */
+                    if ($question->weightbutton[$windex] == $j) {
                         $weight->weight = 1.0;
                     } else {
                         $weight->weight = 0.0;
@@ -283,10 +332,12 @@ class qtype_mtf extends question_type {
                 } else {
                     $weight->weight = 0.0;
                 }
+
                 $DB->update_record('qtype_mtf_weights', $weight);
                 $newweights[$weight->id] = $weight->id;
             }
         }
+
         // Delete any left over old weights.
         foreach ($oldweightrecords as $oldweightrecord) {
             if (!in_array($oldweightrecord->id, $newweights)) {
@@ -629,17 +680,17 @@ class qtype_mtf extends question_type {
         foreach ($rows as $row) {
             $number = $format->getpath($row, array('@', 'number'
             ), $i++);
-
-            $question->{'option_' . $number} = array();
-            $question->{'option_' . $number}['text'] = $format->getpath($row,
+            $indexnumber = $number - 1;
+            $question->option[$indexnumber] = array();
+            $question->option[$indexnumber]['text'] = $format->getpath($row,
                     array('#', 'optiontext', 0, '#', 'text', 0, '#'
                     ), '', true);
-            $question->{'option_' . $number}['format'] = $format->trans_format(
+            $question->option[$indexnumber]['format'] = $format->trans_format(
                     $format->getpath($row,
                             array('#', 'optiontext', 0, '@', 'format'
                             ), FORMAT_HTML));
 
-            $question->{'option_' . $number}['files'] = array();
+            $question->option[$indexnumber]['files'] = array();
 
             // Restore files in options (rows).
             $files = $format->getpath($row, array('#', 'optiontext', 0, '#', 'file'
@@ -649,20 +700,20 @@ class qtype_mtf extends question_type {
                 $filesdata->content = $file['#'];
                 $filesdata->encoding = $file['@']['encoding'];
                 $filesdata->name = $file['@']['name'];
-                $question->{'option_' . $number}['files'][] = $filesdata;
+                $question->option[$indexnumber]['files'][] = $filesdata;
             }
 
-            $question->{'feedback_' . $number} = array();
-            $question->{'feedback_' . $number}['text'] = $format->getpath($row,
+            $question->feedback[$indexnumber] = array();
+            $question->feedback[$indexnumber]['text'] = $format->getpath($row,
                     array('#', 'feedbacktext', 0, '#', 'text', 0, '#'
                     ), '', true);
-            $question->{'feedback_' . $number}['format'] = $format->trans_format(
+            $question->feedback[$indexnumber]['format'] = $format->trans_format(
                     $format->getpath($row,
                             array('#', 'feedbacktext', 0, '@', 'format'
                             ), FORMAT_HTML));
 
             // Restore files in option feedback.
-            $question->{'feedback_' . $number}['files'] = array();
+            $question->feedback[$indexnumber]['files'] = array();
             $files = $format->getpath($row, array('#', 'feedbacktext', 0, '#', 'file'
             ), array(), false);
 
@@ -671,7 +722,7 @@ class qtype_mtf extends question_type {
                 $filesdata->content = $file['#'];
                 $filesdata->encoding = $file['@']['encoding'];
                 $filesdata->name = $file['@']['name'];
-                $question->{'feedback_' . $number}['files'][] = $filesdata;
+                $question->feedback[$indexnumber]['files'][] = $filesdata;
             }
         }
 
@@ -690,13 +741,14 @@ class qtype_mtf extends question_type {
         foreach ($weights as $weight) {
             $rownumber = $format->getpath($weight, array('@', 'rownumber'
             ), 1);
+            $indexnumber = $rownumber - 1;
             $columnnumber = $format->getpath($weight, array('@', 'columnnumber'
             ), 1);
             $value = $format->getpath($weight, array('#', 'value', 0, '#'
             ), 0.0);
 
             if ($value > 0.0) {
-                $question->{'weightbutton_' . $rownumber} = $columnnumber;
+                $question->weightbutton[$indexnumber] = $columnnumber;
             }
         }
 

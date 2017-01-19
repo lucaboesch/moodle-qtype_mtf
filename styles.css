@@ -254,6 +254,9 @@ body#page-question-type-mtf div.feedbacktext {
 
 body#page-question-type-mtf div.optionbox label.feedbacktitle {
 	/* 	 font-weight: bold; */
+	font-weight: normal!important;
+	margin-top:1px!important;
+	margin-bottom:0px!important;
 	color: #777;
 	/*   margin-bottom: 0px; */
 }
@@ -329,4 +332,7 @@ body#page-question-type-mtf div[id^=fgroup_id_weightsarray] {
 	padding-top: 5px;
 	border: 1px solid #BBB;
 	border-top: 0;
+}
+.mform span.error {
+	margin:10px!important;
 }

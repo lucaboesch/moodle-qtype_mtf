@@ -19,6 +19,7 @@
  * @package qtype_mtf
  * @author Amr Hourani amr.hourani@id.ethz.ch
  * @copyright ETHz 2016 amr.hourani@id.ethz.ch
+ *
  */
 defined('MOODLE_INTERNAL') || die();
 
@@ -168,7 +169,7 @@ class qtype_mtf_edit_form extends question_edit_form {
             if (core_tag_tag::is_enabled('core_question', 'question')) {
                 $mform->addElement('header', 'tagshdr', get_string('tags', 'tag'));
                 $mform->addElement('tags', 'tags', get_string('tags'),
-                        array('itemtype' => 'mtf', 'component' => 'qtype_mtf'
+                        array('itemtype' => 'question', 'component' => 'core_question'
                         ));
             }
         }
@@ -249,17 +250,23 @@ class qtype_mtf_edit_form extends question_edit_form {
                 array('id' => 'id_numberofcolumns'
                 ));
         $mform->setType('numberofcolumns', PARAM_INT);
-
-        $numberoptionsmenu = array();
-        for ($i = 1; $i <= 10; $i++) {
-            $numberoptionsmenu[$i] = $i;
-        }
-
-        $numoptionsdisabled = array();
-        $mform->addElement('select', 'numberofrows', get_string('numberofrows', 'qtype_mtf'),
-                $numberoptionsmenu, $numoptionsdisabled);
-        $mform->setDefault('numberofrows', 4);
-        $mform->addHelpButton('numberofrows', 'numberofrows', 'qtype_mtf');
+        /*
+         * $numberoptionsmenu = array();
+         * for ($i = 1; $i <= 15; $i++) {
+         * $numberoptionsmenu[$i] = $i;
+         * }
+         *
+         * $numoptionsdisabled = array();
+         * $mform->addElement('select', 'numberofrows', get_string('numberofrows', 'qtype_mtf'),
+         * $numberoptionsmenu, $numoptionsdisabled);
+         * $mform->setDefault('numberofrows', 4);
+         * $mform->addHelpButton('numberofrows', 'numberofrows', 'qtype_mtf');
+         *
+         */
+        // keep state of numberofrows to validate correctly on submission
+        $mform->addElement('hidden', 'numberofrows');
+        $mform->setType('numberofrows', PARAM_INT);
+        $mform->setDefault('numberofrows', $this->numberofrows);
 
         $mform->addElement('header', 'scoringmethodheader',
                 get_string('scoringmethod', 'qtype_mtf'));
@@ -286,110 +293,48 @@ class qtype_mtf_edit_form extends question_edit_form {
                 ));
         $mform->addHelpButton('shuffleoptions', 'shuffleoptions', 'qtype_mtf');
 
-        $mform->addElement('header', 'optionsandfeedbackheader',
-                get_string('optionsandfeedback', 'qtype_mtf'));
+        $mform->addElement('header', 'answerhdr', get_string('optionsandfeedback', 'qtype_mtf'), '');
+        $mform->setExpanded('answerhdr', 1);
 
         // Add the response text fields.
         $mform->addElement('html', '<span id="judgmentoptionsspan">');
-        $responses = array();
-        for ($i = 1; $i <= 2; ++$i) {
-            $label = '';
-            if ($i == 1) {
-                $label = get_string('responsetexts', 'qtype_mtf');
+
+        for ($li = 1; $li <= 2; ++$li) {
+            $responsetextslabel = '';
+            if ($li == 1) {
+                $responsetextslabel = get_string('responsetexts', 'qtype_mtf');
             }
-            $mform->addElement('text', 'responsetext_' . $i, $label,
+            $mform->addElement('text', 'responsetext_' . $li, $responsetextslabel,
                     array('size' => 6
                     ));
-            $mform->setType('responsetext_' . $i, PARAM_TEXT);
-            $mform->addRule('responsetext_' . $i, null, 'required', null, 'client');
+            $mform->setType('responsetext_' . $li, PARAM_TEXT);
+            $mform->addRule('responsetext_' . $li, null, 'required', null, 'client');
 
-            $mform->setDefault('responsetext_' . $i, get_string('responsetext' . $i, 'qtype_mtf'));
+            $mform->setDefault('responsetext_' . $li, get_string('responsetext' . $li, 'qtype_mtf'));
         }
         $mform->addElement('html', '</span>');
-        $responsetexts = array();
+
+        $this->responsetexts = array();
         if (isset($this->question->options->columns) && !empty($this->question->options->columns)) {
             foreach ($this->question->options->columns as $key => $column) {
-                $responsetexts[] = format_text($column->responsetext, FORMAT_HTML);
+                $this->responsetexts[] = format_text($column->responsetext, FORMAT_HTML);
             }
             // What if only one col? have the max just in case
-            if (count($responsetexts)) {
+            if (count($this->responsetexts)) {
                 for ($i = count($this->question->options->columns) + 1; $i <=
                          QTYPE_MTF_NUMBER_OF_RESPONSES; $i++) {
                     // Always default it to second options values...
-                    $responsetexts[] = get_string('responsetext2', 'qtype_mtf');
+                    $this->responsetexts[] = get_string('responsetext2', 'qtype_mtf');
                 }
             }
         } else {
-            $responsetexts[] = get_string('responsetext1', 'qtype_mtf');
-            $responsetexts[] = get_string('responsetext2', 'qtype_mtf');
+            $this->responsetexts[] = get_string('responsetext1', 'qtype_mtf');
+            $this->responsetexts[] = get_string('responsetext2', 'qtype_mtf');
         }
 
-        // Add an option text editor, response radio buttons and a feedback editor for each option.
-        for ($i = 1; $i <= 10; ++$i) {
-            // Add the option editor.
-            $mform->addElement('html',
-                    '<div class="optionbox" id="qtype_mtf_optionbox_response_' . $i . '">'); // Open
-                                                                                             // div.optionbox.
-            $mform->addElement('html', '<div class="optionandresponses">'); // Open div.optionbox.
-
-            $mform->addElement('html', '<div class="optiontext">'); // Open div.optiontext.
-            $mform->addElement('html',
-                    '<label class="optiontitle">' . get_string('optionno', 'qtype_mtf', $i) .
-                             '</label>');
-            $mform->addElement('editor', 'option_' . $i, '', array('rows' => 3
-            ), $this->editoroptions);
-            $mform->setDefault('option_' . $i,
-                    array('text' => get_string('enteroptionhere', 'qtype_mtf')
-                    ));
-            $mform->setType('option_' . $i, PARAM_RAW);
-
-            $mform->addElement('html', '</div>'); // Close div.optiontext.
-
-            // Add the radio buttons for responses.
-            $mform->addElement('html', '<div class="responses">'); // Open div.responses.
-            $radiobuttons = array();
-            $radiobuttonname = 'weightbutton_' . $i;
-
-            for ($j = 1; $j <= 2; ++$j) {
-                if ($j == 1) {
-                    $negativeorpositive = 'positive'; // Usually TRUE
-                } else {
-                    $negativeorpositive = 'negative'; // Usually FALSE
-                }
-                $attributes = array('data-colmtf' => $negativeorpositive
-                );
-
-                if (array_key_exists($j - 1, $responsetexts)) {
-                    $radiobuttons[] = &$mform->createElement('radio', $radiobuttonname, '',
-                            $responsetexts[$j - 1], $j, $attributes);
-                } else {
-                    $radiobuttons[] = &$mform->createElement('radio', $radiobuttonname, '', '', $j,
-                            $attributes);
-                }
-            }
-            $mform->addGroup($radiobuttons, $radiobuttonname, '', array('<br/>'
-            ), false);
-            $mform->setDefault($radiobuttonname, 2);
-
-            $mform->addElement('html', '</div>'); // Close div.responses.
-            $mform->addElement('html', '</div>'); // Close div.optionsandresponses.
-
-            $mform->addElement('html', '<br /><br />'); // Close div.optionsandresponses.
-
-            // Add the feedback text editor in a new line.
-            $mform->addElement('html', '<div class="feedbacktext">'); // Open div.feedbacktext.
-            $mform->addElement('html',
-                    '<label class="feedbacktitle">' .
-                             get_string('feedbackforoption', 'qtype_mtf', $i) . '</label>');
-            $mform->addElement('editor', 'feedback_' . $i, '',
-                    array('rows' => 1, 'placeholder' => ''
-                    ), $this->editoroptions);
-            $mform->setType('feedback_' . $i, PARAM_RAW);
-
-            $mform->addElement('html', '</div>'); // Close div.feedbacktext.
-            $mform->addElement('html', '</div><br />'); // Close div.optionbox.
-        }
-
+        $this->add_per_answer_fields($mform, get_string('optionno', 'qtype_mtf', '{no}'), 0,
+                $this->numberofrows, 3); // max(5,
+                                         // QUESTION_NUMANS_START)
         $mform->addElement('hidden', 'qtype');
         $mform->setType('qtype', PARAM_ALPHA);
 
@@ -416,6 +361,132 @@ class qtype_mtf_edit_form extends question_edit_form {
     }
 
     /**
+     * Add a set of form fields, obtained from get_per_answer_fields, to the form,
+     * one for each existing answer, with some blanks for some new ones.
+     *
+     * @param object $mform the form being built.
+     * @param $label the label to use for each option.
+     * @param $gradeoptions the possible grades for each answer.
+     * @param $minoptions the minimum number of answer blanks to display.
+     *        Default QUESTION_NUMANS_START.
+     * @param $addoptions the number of answer blanks to add. Default QUESTION_NUMANS_ADD.
+     */
+    protected function add_per_answer_fields(&$mform, $label, $gradeoptions,
+            $minoptions = QUESTION_NUMANS_START, $addoptions = QUESTION_NUMANS_ADD) {
+        $answersoption = '';
+        $repeatedoptions = array();
+        $repeated = $this->get_per_answer_fields($mform, $label, $gradeoptions, $repeatedoptions,
+                $answersoption);
+
+        if (isset($this->question->options->rows)) {
+            $repeatsatstart = count($this->question->options->rows);
+        } else {
+            $repeatsatstart = $minoptions;
+        }
+
+        $this->repeat_elements($repeated, $repeatsatstart, $repeatedoptions, 'numberofrows',
+                'addanswers', $addoptions, $this->get_more_choices_string(), true);
+    }
+
+    protected function get_per_answer_fields($mform, $label, $gradeoptions, &$repeatedoptions,
+            &$answersoption) {
+        $responses = array();
+
+        // Add an option text editor, response radio buttons and a feedback editor for each option.
+        preg_match_all('!\d+!', $label, $matches);
+        $thecurrenteditorcounter = $matches[0];
+        if (!$thecurrenteditorcounter) {
+            $i = 1;
+        } else {
+            $i = $thecurrenteditorcounter;
+        }
+
+        $mform->setDefault('numberofrows', $i);
+        // Add the option editor.
+        $responses[] = $mform->createElement('html',
+                '<div class="optionbox" id="qtype_mtf_optionbox_response' . '">'); // Open
+                                                                                   // div.optionbox.
+        $responses[] = $mform->createElement('html', '<div class="optionandresponses">'); // Open
+                                                                                          // div.optionbox.
+
+        $responses[] = $mform->createElement('html', '<div class="optiontext">'); // Open
+
+        $responses[] = $mform->createElement('editor', 'option', $label,
+                array('rows' => 3
+                ), $this->editoroptions);
+        /*
+         * $mform->setDefault('option',
+         * array('text' => get_string('enteroptionhere', 'qtype_mtf')
+         * ));
+         */
+        // $mform->setType('option', PARAM_RAW);
+
+        $responses[] = $mform->createElement('html', '</div>'); // Close div.optiontext.
+
+        // Add the radio buttons for responses.
+        $responses[] = $mform->createElement('html', '<div class="responses">'); // Open
+                                                                                 // div.responses.
+        $radiobuttons = array();
+        $radiobuttonname = 'weightbutton';
+
+        for ($j = 1; $j <= 2; ++$j) {
+            if ($j == 1) {
+                $negativeorpositive = 'positive'; // Usually TRUE
+            } else {
+                $negativeorpositive = 'negative'; // Usually FALSE
+            }
+            $attributes = array('data-colmtf' => $negativeorpositive
+            );
+
+            if (array_key_exists($j - 1, $this->responsetexts)) {
+                $radiobuttons[] = &$mform->createElement('radio', $radiobuttonname, '',
+                        $this->responsetexts[$j - 1], $j, $attributes);
+                // $mform->setChecked(true);
+            } else {
+                $radiobuttons[] = &$mform->createElement('radio', $radiobuttonname, '', '', $j,
+                        $attributes);
+            }
+        }
+        // $mform->setDefault($radiobuttonname, 2);
+
+        $responses[] = $mform->createElement('group', 'radiobuttonsgroupname', '', $radiobuttons,
+                array('<br/>'
+                ), false);
+
+        $responses[] = $mform->createElement('html', '</div>'); // Close div.responses.
+        $responses[] = $mform->createElement('html', '</div>'); // Close
+                                                                // div.optionsandresponses.
+
+        $responses[] = $mform->createElement('html', '<br /><br />'); // Close
+                                                                      // div.optionsandresponses.
+
+        // Add the feedback text editor in a new line.
+        $responses[] = $mform->createElement('html', '<div class="feedbacktext">'); // Open
+                                                                                    // div.feedbacktext.
+        /*
+         * $responses[] = $mform->createElement('html',
+         * '<label class="feedbacktitle">' . get_string('feedbackforoption', 'qtype_mtf') . ' ' .
+         * $label . '</label>');
+         */
+        $responses[] = $mform->createElement('editor', 'feedback',
+                '<label class="feedbacktitle">' . get_string('feedbackforoption', 'qtype_mtf') . ' ' .
+                         $label . '</label>',
+                        array('rows' => 1, 'placeholder' => ''
+                        ), $this->editoroptions);
+        // $mform->setType('feedback', PARAM_RAW);
+
+        $responses[] = $mform->createElement('html', '</div>'); // Close div.feedbacktext.
+        $responses[] = $mform->createElement('html', '</div><br />'); // Close div.optionbox.
+
+        $repeatedoptions['feedback']['type'] = PARAM_RAW;
+        $repeatedoptions[$radiobuttonname]['default'] = 2;
+        $repeatedoptions['option']['type'] = PARAM_RAW;
+        $repeatedoptions['option']['text'] = get_string('enteroptionhere', 'qtype_mtf');
+        $answersoption = 'option';
+        return $responses;
+    }
+
+    /**
      * (non-PHPdoc).
      *
      * @see question_edit_form::data_preprocessing()
@@ -433,26 +504,44 @@ class qtype_mtf_edit_form extends question_edit_form {
         }
 
         if (isset($this->question->id)) {
-            $key = 1;
+            $key = 0;
+
             foreach ($question->options->rows as $row) {
                 // Restore all images in the option text.
-                $draftid = file_get_submitted_draft_itemid('option_' . $key);
-                $question->{'option_' . $key}['text'] = file_prepare_draft_area($draftid,
+                $draftid = file_get_submitted_draft_itemid("option[$key]");
+                $question->{"option[$key]"}['text'] = file_prepare_draft_area($draftid,
                         $this->context->id, 'qtype_mtf', 'optiontext',
                         !empty($row->id) ? (int) $row->id : null, $this->fileoptions,
                         $row->optiontext);
-                $question->{'option_' . $key}['itemid'] = $draftid;
+                $question->{"option[$key]"}['itemid'] = $draftid;
+
+                // Now weights for that radio button for that row
+                // Evil hack alert. Formslib can store defaults in two ways for
+                // repeat elements:
+                // ->_defaultValues['weightbutton[0]'] and
+                // ->_defaultValues['weightbutton'][0].
+                // The $repeatedoptions['weightbutton']['default'] = 0 bit above means
+                // that ->_defaultValues['weightbutton[0]'] has already been set, but we
+                // are using object notation here, so we will be setting
+                // ->_defaultValues['weightbutton'][0]. That does not work, so we have
+                // to unset ->_defaultValues['weightbutton[0]'].
+
+                unset($this->_form->_defaultValues["weightbutton[{$key}]"]);
+                // $question->{"weightbutton[$key]"}['default'] = $question->weightbutton[$key];
 
                 // Now do the same for the feedback text.
-                $draftid = file_get_submitted_draft_itemid('feedback_' . $key);
-                $question->{'feedback_' . $key}['text'] = file_prepare_draft_area($draftid,
+                $draftid = file_get_submitted_draft_itemid("feedback[$key]");
+                $question->{"feedback[$key]"}['text'] = file_prepare_draft_area($draftid,
                         $this->context->id, 'qtype_mtf', 'feedbacktext',
                         !empty($row->id) ? (int) $row->id : null, $this->fileoptions,
                         $row->optionfeedback);
-                $question->{'feedback_' . $key}['itemid'] = $draftid;
+                $question->{"feedback[$key]"}['itemid'] = $draftid;
 
                 ++$key;
             }
+        } else {
+            // For first time - make sure first radio is always TRUE
+            $question->{"weightbutton[0]"}['default'] = 1;
         }
         $this->js_call();
         return $question;
@@ -466,10 +555,11 @@ class qtype_mtf_edit_form extends question_edit_form {
     public function validation($data, $files) {
         $errors = parent::validation($data, $files);
         // Check for empty option texts.
-        for ($i = 1; $i <= $data['numberofrows']; ++$i) {
-            $optiontext = $data['option_' . $i]['text'];
+        $countfulloption = 0;
+        for ($i = 1; $i <= count($data["option"]); ++$i) {
+            $optiontext = $data["option"][$i - 1]['text'];
             // Remove HTML tags.
-            $optiontext = trim(strip_tags($optiontext));
+            $optiontext = trim(strip_tags($optiontext, '<img><video><audio><iframe><embed>'));
             // Remove newlines.
             $optiontext = preg_replace("/[\r\n]+/i", '', $optiontext);
             // Remove whitespaces and tabs.
@@ -477,14 +567,36 @@ class qtype_mtf_edit_form extends question_edit_form {
             // Also remove UTF-8 non-breaking whitespaces.
             $optiontext = trim($optiontext, "\xC2\xA0\n");
             // Now check whether the string is empty.
-            if (empty($optiontext)) {
-                $errors['option_' . $i] = get_string('mustsupplyvalue', 'qtype_mtf');
+            if (!empty($optiontext)) {
+                /*
+                 * No need to check feedback option
+                 * // check if feedback for that option is empty!
+                 * $feedbacktext = $data["feedback"][$i - 1]['text'];
+                 * // Remove HTML tags.
+                 * $feedbacktext = trim(strip_tags($feedbacktext));
+                 * // Remove newlines.
+                 * $feedbacktext = preg_replace("/[\r\n]+/i", '', $feedbacktext);
+                 * // Remove whitespaces and tabs.
+                 * $feedbacktext = preg_replace("/[\s\t]+/i", '', $feedbacktext);
+                 * // Also remove UTF-8 non-breaking whitespaces.
+                 * $feedbacktext = trim($feedbacktext, "\xC2\xA0\n");
+                 * // Now check whether the string is empty.
+                 * if (empty($feedbacktext)) {
+                 * $indexfeedback = $i - 1;
+                 * $errors["feedback[$indexfeedback]"] = get_string('mustsupplyvalue', 'qtype_mtf');
+                 * }
+                 */
+                $countfulloption++;
             }
+        }
+
+        if ($countfulloption == 0) {
+            $errors["option[0]"] = get_string('notenoughanswers', 'qtype_multichoice', 1);
         }
         // Check for empty response texts.
         for ($j = 1; $j <= $data['numberofcolumns']; ++$j) {
-            if (trim(strip_tags($data['responsetext_' . $j])) == false) {
-                $errors['responsetext_' . $j] = get_string('mustsupplyvalue', 'qtype_mtf');
+            if (trim(strip_tags($data["responsetext_" . $j])) == false) {
+                $errors["responsetext_" . $j] = get_string('mustsupplyvalue', 'qtype_mtf');
             }
         }
 
