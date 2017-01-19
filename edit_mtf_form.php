@@ -591,7 +591,7 @@ class qtype_mtf_edit_form extends question_edit_form {
         }
 
         if ($countfulloption == 0) {
-            $errors["option[0]"] = get_string('notenoughanswers', 'qtype_multichoice', 1);
+            $errors["option[0]"] = get_string('notenoughanswers', 'qtype_mtf', 1);
         }
         // Check for empty response texts.
         for ($j = 1; $j <= $data['numberofcolumns']; ++$j) {
