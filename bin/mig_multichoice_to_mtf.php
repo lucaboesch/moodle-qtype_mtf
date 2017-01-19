@@ -63,7 +63,7 @@ $sql = "SELECT q.*
 $params = array();
 
 if (!$all && (!($courseid > 0 || $categoryid > 0))) {
-    echo "<br /><center><h1><br />********** Multichoice (with Multi Answers Only) migration to qtype_mtf (MTF ETHz). **********<br /><br /><font color='red'>You should specify either the '<font color='black'>courseid</font>'
+    echo "<br /><center><h1><br />**********<br />MultiChoice To MTF<br />**********<br />********** Multichoice (with Multi Answers Only) migration To qtype_mtf (MTF ETHz). **********<br /><br /><font color='red'>You should specify either the '<font color='black'>courseid</font>'
     or the '<font color='black'>categoryid</font>' parameter Or set the parameter '<font color='black'>all</font>' to 1. Please set '<font color='black'>dryrun</font>' parameter to 1 in order to simulate the migration before committing to the database. No migration will be done without restrictions!</font>
 	</center>
 	<br /><br />Examples:
