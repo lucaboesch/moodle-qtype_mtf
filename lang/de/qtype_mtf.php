@@ -74,3 +74,4 @@ $string['numberofrows'] = 'Anzahl Wahlantworten';
 $string['numberofrows_help'] = 'Wählen Sie die Anzahl Wahlantworten. Wenn Sie auf eine kleinere Anzahl Wahlantworten wechseln, werden überzählige Wahlantworten gelöscht, sobald die Frage gespeichert wird.';
 $string['deleterawswarning'] = 'Wenn Sie auf eine kleinere Anzahl Wahlantworten wechseln, werden überzählige Wahlantworten gelöscht. Möchten Sie fortfahren?';
 $string['mustdeleteextrarows'] = 'Der Fragetyp MTF erlaubt maximal 5 Wahlantworten.  {$a} Wahlantwort(en) werden gelöscht. Falls Sie abbrechen ohne zu speichern, bleiben die überzähligen Wahlantworten erhalten.';
+$string['notenoughanswers'] = 'Dieser Fragetyp braucht mindestens {$a} Antwort';
