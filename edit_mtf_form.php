@@ -501,7 +501,6 @@ class qtype_mtf_edit_form extends question_edit_form {
             $question->columns = $question->options->columns;
             $question->numberofrows = $question->options->numberofrows;
             $question->numberofcolumns = $question->options->numberofcolumns;
-            $question->weights = $question->options->weights;
         }
 
         if (isset($this->question->id)) {
@@ -547,7 +546,7 @@ class qtype_mtf_edit_form extends question_edit_form {
         } else {
 
             // For first time - make sure first radio is always TRUE
-            $question->{"weightbutton[0]"}['default'] = 1;
+            // $question->{"weightbutton[0]"}['default'] = 2;
         }
         $this->js_call();
         return $question;
