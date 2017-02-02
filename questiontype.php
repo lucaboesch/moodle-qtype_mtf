@@ -138,6 +138,7 @@ class qtype_mtf extends question_type {
                 $question->weightbutton[$windexcounter] = $weight->columnnumber;
             }
         }
+
         // Put the weight records into an array indexed by rownumber and columnnumber.
         $question->options->weights = $this->weight_records_to_array($weightrecords);
 

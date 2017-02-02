@@ -134,13 +134,13 @@
 			
 			var numberofrows = $('#id_numberofrows').val();
 			mtfnumberchanged(numberofrows, 'load');
-			
+/*			
 			// If firsttime loading, then tick first TRUE
 			if (!$('input[data-colmtf="positive"]:checked').val()) {
 				// Tick first TRUE
 				$('#id_weightbutton_0_1').prop('checked', true);
 			}		
-
+*/
 		
 	});	
 })(jQuery);

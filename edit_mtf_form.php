@@ -501,6 +501,7 @@ class qtype_mtf_edit_form extends question_edit_form {
             $question->columns = $question->options->columns;
             $question->numberofrows = $question->options->numberofrows;
             $question->numberofcolumns = $question->options->numberofcolumns;
+            $question->weights = $question->options->weights;
         }
 
         if (isset($this->question->id)) {
@@ -515,6 +516,9 @@ class qtype_mtf_edit_form extends question_edit_form {
                         $row->optiontext);
                 $question->{"option[$key]"}['itemid'] = $draftid;
 
+                // $question->weightbutton[$key] = 5;
+                // $question->{"weightbutton[$key]"}['default'] =
+                // $this->_form->_defaultValues["weightbutton[{$key}]"];
                 // Now weights for that radio button for that row
                 // Evil hack alert. Formslib can store defaults in two ways for
                 // repeat elements:
@@ -525,9 +529,10 @@ class qtype_mtf_edit_form extends question_edit_form {
                 // are using object notation here, so we will be setting
                 // ->_defaultValues['weightbutton'][0]. That does not work, so we have
                 // to unset ->_defaultValues['weightbutton[0]'].
+                // $question->{"weightbutton[$key]"}['default'] =
+                // $this->_form->_defaultValues["weightbutton[{$key}]"];
 
                 unset($this->_form->_defaultValues["weightbutton[{$key}]"]);
-                // $question->{"weightbutton[$key]"}['default'] = $question->weightbutton[$key];
 
                 // Now do the same for the feedback text.
                 $draftid = file_get_submitted_draft_itemid("feedback[$key]");
@@ -540,6 +545,7 @@ class qtype_mtf_edit_form extends question_edit_form {
                 ++$key;
             }
         } else {
+
             // For first time - make sure first radio is always TRUE
             $question->{"weightbutton[0]"}['default'] = 1;
         }
