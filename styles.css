@@ -305,6 +305,8 @@ body#page-question-type-mtf div[id^=fitem_id_] .fitemtitle {
 	margin-right: 0px;
 	padding-left: 6px;
 	padding-right: 0px;
+	float: initial;
+    text-align: initial;
 }
 
 body.dir-rtl#page-question-type-mtf div[id^=fitem_id_] .fitemtitle {
