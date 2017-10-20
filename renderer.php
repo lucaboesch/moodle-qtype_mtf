@@ -8,11 +8,11 @@
 //
 // Moodle is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle. If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  *
@@ -20,7 +20,9 @@
  * @author Amr Hourani amr.hourani@id.ethz.ch
  * @copyright ETHz 2016 amr.hourani@id.ethz.ch
  */
-require_once ($CFG->libdir . '/outputcomponents.php');
+defined('MOODLE_INTERNAL') || die();
+
+require_once($CFG->libdir . '/outputcomponents.php');
 
 
 /**
@@ -108,8 +110,6 @@ class qtype_mtf_renderer extends qtype_renderer {
 
         $table->head = array();
         // Add empty header for option texts.
-        // $table->head[] = '';
-
         // Add the response texts as table headers.
         foreach ($question->columns as $column) {
             $cell = new html_table_cell(
@@ -143,8 +143,8 @@ class qtype_mtf_renderer extends qtype_renderer {
 
                 $buttonname = $qa->get_field_prefix() . $field;
                 $buttonid = 'qtype_mtf_' . $qa->get_field_prefix() . $field;
-                $qtype_mtf_id = 'qtype_mtf_' . $question->id;
-                $datacol = 'data-mtf="' . $qtype_mtf_id . '"';
+                $qtypemtfid = 'qtype_mtf_' . $question->id;
+                $datacol = 'data-mtf="' . $qtypemtfid . '"';
                 $ischecked = false;
                 if (array_key_exists($field, $response) && ($response[$field] == $column->number)) {
                     $ischecked = true;
@@ -153,7 +153,7 @@ class qtype_mtf_renderer extends qtype_renderer {
                 $singleormulti = 2; // Multi.
 
                 $radio = $this->radiobutton($buttonname, $column->number, $ischecked, $isreadonly,
-                        $buttonid, $datacol, $datamulti, $singleormulti, $qtype_mtf_id);
+                        $buttonid, $datacol, $datamulti, $singleormulti, $qtypemtfid);
                 // Show correctness icon with radio button if needed.
                 if ($displayoptions->correctness) {
                     $weight = $question->weight($row->number, $column->number);
@@ -174,7 +174,6 @@ class qtype_mtf_renderer extends qtype_renderer {
                     '<span class="optiontext"><label for="' . $buttonid . '">' . $rowtext .
                              '</label></span>');
             $cell->attributes['class'] = 'optiontext';
-            // $cell->attributes['id'] = 'qtype_mtf_cell_'.$buttonid.'_'.$rowid;
             $rowdata[] = $cell;
             // Has a selection been made for this option?
             $isselected = $question->is_answered($response, $key);
@@ -190,13 +189,9 @@ class qtype_mtf_renderer extends qtype_renderer {
                      $isselected && trim($row->optionfeedback)) {
                 $cell = new html_table_cell(
                         html_writer::tag('div',
-                                $question->make_html_inline(
-                                        $question->format_text($row->optionfeedback,
+                                $question->make_html_inline($question->format_text($row->optionfeedback,
                                                 $row->optionfeedbackformat, $qa, 'qtype_mtf',
-                                                'feedbacktext', $rowid)),
-                                array('class' => 'mtfspecificfeedback'
-                                )));
-
+                                                'feedbacktext', $rowid)), array('class' => 'mtfspecificfeedback')));
                 $rowdata[] = $cell;
             } else {
                 $cell = new html_table_cell(html_writer::tag('div', ''));
@@ -224,7 +219,7 @@ class qtype_mtf_renderer extends qtype_renderer {
      * @return string
      */
     protected static function radiobutton($name, $value, $checked, $readonly, $id = '', $datacol = '',
-            $datamulti = '', $singleormulti = 2, $qtype_mtf_id = '') {
+            $datamulti = '', $singleormulti = 2, $qtypemtfid = '') {
         $readonly = $readonly ? 'readonly="readonly" disabled="disabled"' : '';
         $checked = $checked ? 'checked="checked"' : '';
         $result = '';

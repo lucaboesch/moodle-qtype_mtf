@@ -8,11 +8,11 @@
 //
 // Moodle is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle. If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  *
@@ -23,8 +23,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
-require_once ($CFG->libdir . '/questionlib.php');
-require_once ($CFG->dirroot . '/question/type/mtf/lib.php');
+require_once($CFG->libdir . '/questionlib.php');
+require_once($CFG->dirroot . '/question/type/mtf/lib.php');
 
 
 /**
@@ -185,8 +185,8 @@ class qtype_mtf extends question_type {
         ), 'number ASC');
         $newrows = array();
 
-        // Get final number of rows in case some are empty (1 is mandatory though)
-        // Also get those records into new object array for future use
+        // Get final number of rows in case some are empty (1 is mandatory though).
+        // Also get those records into new object array for future use.
         $countfilledrows = 0;
         $newoptions = new stdClass();
 
@@ -204,7 +204,7 @@ class qtype_mtf extends question_type {
             if (!empty($optiontext)) {
                 $newoptions->option[$countfilledrows] = $question->option[$i - 1];
                 $newoptions->feedback[$countfilledrows] = $question->feedback[$i - 1];
-                // Keep consistency of Feedback in case not available
+                // Keep consistency of Feedback in case not available.
                 if (empty($newoptions->feedback[$countfilledrows])) {
                     $newoptions->feedback[$countfilledrows]['text'] = '';
                     $newoptions->feedback[$countfilledrows]['type'] = '';
@@ -217,7 +217,7 @@ class qtype_mtf extends question_type {
         unset($question->feedback);
         unset($question->weightbutton);
 
-        // Update number of options to the ones that are filled :)
+        // Update number of options to the ones that are filled.
         $options->numberofrows = $countfilledrows;
 
         $question->option = $newoptions->option;
@@ -356,7 +356,6 @@ class qtype_mtf extends question_type {
      */
     protected function initialise_question_instance(question_definition $question, $questiondata) {
         parent::initialise_question_instance($question, $questiondata);
-
         $question->shuffleoptions = $questiondata->options->shuffleoptions;
         $question->scoringmethod = $questiondata->options->scoringmethod;
         $question->numberofrows = $questiondata->options->numberofrows;
@@ -658,23 +657,11 @@ class qtype_mtf extends question_type {
         raise_memory_limit(MEMORY_EXTRA);
         $question = $format->import_headers($data);
         $question->qtype = 'mtf';
-
-        $question->scoringmethod = $format->getpath($data,
-                array('#', 'scoringmethod', 0, '#', 'text', 0, '#'
-                ), 'mtf');
-        $question->shuffleoptions = $format->trans_single(
-                $format->getpath($data, array('#', 'shuffleoptions', 0, '#'
-                ), 1));
-        $question->numberofrows = $format->getpath($data,
-                array('#', 'numberofrows', 0, '#'
-                ), QTYPE_MTF_NUMBER_OF_OPTIONS);
-        $question->numberofcolumns = $format->getpath($data,
-                array('#', 'numberofcolumns', 0, '#'
-                ), QTYPE_MTF_NUMBER_OF_RESPONSES);
-        $question->answernumbering = $format->getpath($data,
-                array('#', 'answernumbering', 0, '#'
-                ), 'none');
-
+        $question->scoringmethod = $format->getpath($data, array('#', 'scoringmethod', 0, '#', 'text', 0, '#'), 'mtf');
+        $question->shuffleoptions = $format->trans_single($format->getpath($data, array('#', 'shuffleoptions', 0, '#'), 1));
+        $question->numberofrows = $format->getpath($data, array('#', 'numberofrows', 0, '#'), QTYPE_MTF_NUMBER_OF_OPTIONS);
+        $question->numberofcolumns = $format->getpath($data, array('#', 'numberofcolumns', 0, '#'), QTYPE_MTF_NUMBER_OF_RESPONSES);
+        $question->answernumbering = $format->getpath($data, array('#', 'answernumbering', 0, '#'), 'none');
         $rows = $data['#']['row'];
         $i = 1;
         foreach ($rows as $row) {
@@ -683,15 +670,10 @@ class qtype_mtf extends question_type {
             $indexnumber = $number - 1;
             $question->option[$indexnumber] = array();
             $question->option[$indexnumber]['text'] = $format->getpath($row,
-                    array('#', 'optiontext', 0, '#', 'text', 0, '#'
-                    ), '', true);
-            $question->option[$indexnumber]['format'] = $format->trans_format(
-                    $format->getpath($row,
-                            array('#', 'optiontext', 0, '@', 'format'
-                            ), FORMAT_HTML));
-
+                    array('#', 'optiontext', 0, '#', 'text', 0, '#'), '', true);
+            $question->option[$indexnumber]['format'] = $format->trans_format($format->getpath($row,
+                    array('#', 'optiontext', 0, '@', 'format'), FORMAT_HTML));
             $question->option[$indexnumber]['files'] = array();
-
             // Restore files in options (rows).
             $files = $format->getpath($row, array('#', 'optiontext', 0, '#', 'file'
             ), array(), false);
@@ -702,21 +684,16 @@ class qtype_mtf extends question_type {
                 $filesdata->name = $file['@']['name'];
                 $question->option[$indexnumber]['files'][] = $filesdata;
             }
-
             $question->feedback[$indexnumber] = array();
             $question->feedback[$indexnumber]['text'] = $format->getpath($row,
                     array('#', 'feedbacktext', 0, '#', 'text', 0, '#'
                     ), '', true);
             $question->feedback[$indexnumber]['format'] = $format->trans_format(
-                    $format->getpath($row,
-                            array('#', 'feedbacktext', 0, '@', 'format'
-                            ), FORMAT_HTML));
-
+                    $format->getpath($row, array('#', 'feedbacktext', 0, '@', 'format'), FORMAT_HTML));
             // Restore files in option feedback.
             $question->feedback[$indexnumber]['files'] = array();
             $files = $format->getpath($row, array('#', 'feedbacktext', 0, '#', 'file'
             ), array(), false);
-
             foreach ($files as $file) {
                 $filesdata = new stdclass();
                 $filesdata->content = $file['#'];
@@ -725,7 +702,6 @@ class qtype_mtf extends question_type {
                 $question->feedback[$indexnumber]['files'][] = $filesdata;
             }
         }
-
         $columns = $data['#']['column'];
         $j = 1;
         foreach ($columns as $column) {
@@ -735,7 +711,6 @@ class qtype_mtf extends question_type {
                     array('#', 'responsetext', 0, '#', 'text', 0, '#'
                     ), '', true);
         }
-
         // Finally, import the weights.
         $weights = $data['#']['weight'];
         foreach ($weights as $weight) {
@@ -746,12 +721,10 @@ class qtype_mtf extends question_type {
             ), 1);
             $value = $format->getpath($weight, array('#', 'value', 0, '#'
             ), 0.0);
-
             if ($value > 0.0) {
                 $question->weightbutton[$indexnumber] = $columnnumber;
             }
         }
-
         return $question;
     }
 }

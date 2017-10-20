@@ -28,12 +28,16 @@ oder
 ** ENGLISH **
 ********** Multichoice (with Multi Answers Only) migration to qtype_mtf (Multichoice ETHz). **********
 
-You should specify either the 'courseid' or the 'categoryid' parameter! Or set the parameter 'all' to 1. No migration will be done without restrictions!
+You should specify either:
+- 'courseid' or
+- 'categoryid' or
+- set the parameter 'all' to 1.
 
+Note: No migration will be done without restrictions!
 
 Examples:
 	
-    Specific Course: MOODLE_URL/question/type/mtf/bin/mig_multichoice_to_mtf.php?courseid=55
-    Specific Question Category: MOODLE_URL/question/type/mtf/bin/mig_multichoice_to_mtf.php?categoryid=1
-    All Multi question: MOODLE_URL/question/type/mtf/bin/mig_multichoice_to_mtf.php?all=1
-	DRY RUN: MOODLE_URL/question/type/mtf/bin/mig_multichoice_to_mtf.php?all=1&dryrun=1
+Specific Course: MOODLE_URL/question/type/mtf/bin/mig_multichoice_to_mtf.php?courseid=55
+Specific Question Category: MOODLE_URL/question/type/mtf/bin/mig_multichoice_to_mtf.php?categoryid=1
+All Multi question: MOODLE_URL/question/type/mtf/bin/mig_multichoice_to_mtf.php?all=1
+DRY RUN: MOODLE_URL/question/type/mtf/bin/mig_multichoice_to_mtf.php?all=1&dryrun=1

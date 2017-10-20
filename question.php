@@ -8,11 +8,11 @@
 //
 // Moodle is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle. If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  *
@@ -393,7 +393,7 @@ class qtype_mtf_question extends question_graded_automatically_with_countback {
         global $CFG;
         $type = $this->scoringmethod;
         $gradingclass = 'qtype_mtf_grading_' . $type;
-        require_once ($CFG->dirroot . '/question/type/mtf/grading/' . $gradingclass . '.class.php');
+        require_once($CFG->dirroot . '/question/type/mtf/grading/' . $gradingclass . '.class.php');
 
         return new $gradingclass();
     }
@@ -528,8 +528,7 @@ class qtype_mtf_question extends question_graded_automatically_with_countback {
             return $hint;
         }
 
-        if ($this->get_num_selected_choices($qa->get_last_qt_data()) >
-                 $this->get_num_correct_choices()) {
+        if ($this->get_num_selected_choices($qa->get_last_qt_data()) > $this->get_num_correct_choices()) {
             $hint = clone ($hint);
             $this->disable_hint_settings_when_too_many_selected($hint);
         }
@@ -541,7 +540,7 @@ class qtype_mtf_question extends question_graded_automatically_with_countback {
      *
      * @see question_definition::check_file_access()
      */
-    public function check_file_access($qa, $options, $component, $filearea, $args, $forcedownload) { // print_error("looolo".print_r($args));
+    public function check_file_access($qa, $options, $component, $filearea, $args, $forcedownload) {
         if ($component == 'qtype_mtf' && $filearea == 'optiontext') {
             return true;
         } else if ($component == 'qtype_mtf' && $filearea == 'feedbacktext') {

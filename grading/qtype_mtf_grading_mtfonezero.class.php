@@ -8,11 +8,11 @@
 //
 // Moodle is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle. If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  *
@@ -20,7 +20,8 @@
  * @author Amr Hourani amr.hourani@id.ethz.ch
  * @copyright ETHz 2016 amr.hourani@id.ethz.ch
  */
-require_once ($CFG->dirroot . '/question/type/mtf/grading/qtype_mtf_grading.class.php');
+defined('MOODLE_INTERNAL') || die();
+require_once($CFG->dirroot . '/question/type/mtf/grading/qtype_mtf_grading.class.php');
 
 
 class qtype_mtf_grading_mtfonezero extends qtype_mtf_grading {
@@ -51,8 +52,8 @@ class qtype_mtf_grading_mtfonezero extends qtype_mtf_grading {
                 ++$correctrows;
             }
         }
-        // mtf1/0: if all responses are correct => all points, else 0 points.
-        // i.e. points = if (correct_responses == num_options) then max_points else 0.
+        // Mtf1/0: if all responses are correct => all points, else 0 points.
+        // I.e. points = if (correct_responses == num_options) then max_points else 0.
 
         if ($correctrows == $question->numberofrows) {
             return 1;

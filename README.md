@@ -2,7 +2,12 @@
 
 *** Info regarding migration from qtype_multichoice (with Multi Answers Only) to qtype_mtf ***
 
-You should specify either the 'courseid' or the 'categoryid' parameter! Or set the parameter 'all' to 1. No migration will be done without restrictions!
+You should specify either:
+- 'courseid' or
+- 'categoryid' or
+- set the parameter 'all' to 1.
+
+Note: No migration will be done without restrictions!
 
 Examples:
 	

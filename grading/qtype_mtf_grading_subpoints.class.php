@@ -8,11 +8,11 @@
 //
 // Moodle is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle. If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  *
@@ -20,7 +20,8 @@
  * @author Amr Hourani amr.hourani@id.ethz.ch
  * @copyright ETHz 2016 amr.hourani@id.ethz.ch
  */
-require_once ($CFG->dirroot . '/question/type/mtf/grading/qtype_mtf_grading.class.php');
+defined('MOODLE_INTERNAL') || die();
+require_once($CFG->dirroot . '/question/type/mtf/grading/qtype_mtf_grading.class.php');
 
 
 class qtype_mtf_grading_subpoints extends qtype_mtf_grading {
