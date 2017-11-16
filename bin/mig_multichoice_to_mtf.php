@@ -195,7 +195,7 @@ foreach ($questions as $question) {
     }
     // Create a new mtf question in the same category.
     unset($question->id);
-    $questionname = substr($question->name . ' (SCMTF ' . date("Y-m-d H:i:s") . ')', 0, 255);
+    $questionname = substr($question->name . ' (MTF ' . date("Y-m-d H:i:s") . ')', 0, 255);
     // Original Question Name plus SCMTF limited by 255 chars.
     $question->qtype = 'mtf';
     $question->name = $questionname;
