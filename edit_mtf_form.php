@@ -271,11 +271,11 @@ class qtype_mtf_edit_form extends question_edit_form {
         $mform->addHelpButton('radiogroupscoring', 'scoringmethod', 'qtype_mtf');
         $mform->setDefault('scoringmethod', 'subpoints');
 
-        // Add the shuffleoptions checkbox.
-        $mform->addElement('advcheckbox', 'shuffleoptions',
-                get_string('shuffleoptions', 'qtype_mtf'), null, null, array(0, 1
+        // Add the shuffleanswers checkbox.
+        $mform->addElement('advcheckbox', 'shuffleanswers',
+                get_string('shuffleanswers', 'qtype_mtf'), null, null, array(0, 1
                 ));
-        $mform->addHelpButton('shuffleoptions', 'shuffleoptions', 'qtype_mtf');
+        $mform->addHelpButton('shuffleanswers', 'shuffleanswers', 'qtype_mtf');
 
         $mform->addElement('header', 'answerhdr', get_string('optionsandfeedback', 'qtype_mtf'), '');
         $mform->setExpanded('answerhdr', 1);
@@ -449,6 +449,13 @@ class qtype_mtf_edit_form extends question_edit_form {
         return $responses;
     }
 
+    protected function get_hint_fields($withclearwrong = false, $withshownumpartscorrect = false) {
+        list($repeated, $repeatedoptions) = parent::get_hint_fields($withclearwrong, $withshownumpartscorrect);
+        $repeatedoptions['hintclearwrong']['disabledif'] = array('single', 'eq', 1);
+        $repeatedoptions['hintshownumcorrect']['disabledif'] = array('single', 'eq', 1);
+        return array($repeated, $repeatedoptions);
+    }
+    
     /**
      * (non-PHPdoc).
      *
@@ -456,9 +463,10 @@ class qtype_mtf_edit_form extends question_edit_form {
      */
     protected function data_preprocessing($question) {
         $question = parent::data_preprocessing($question);
+        $question = $this->data_preprocessing_hints($question, true, true);
 
         if (isset($question->options)) {
-            $question->shuffleoptions = $question->options->shuffleoptions;
+            $question->shuffleanswers = $question->options->shuffleanswers;
             $question->scoringmethod = $question->options->scoringmethod;
             $question->rows = $question->options->rows;
             $question->columns = $question->options->columns;
