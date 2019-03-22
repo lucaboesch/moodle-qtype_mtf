@@ -26,4 +26,4 @@ $plugin->component = 'qtype_mtf';
 $plugin->version = 2019032200;
 $plugin->requires = 2017111300; // Moodle >=3.4
 $plugin->maturity = MATURITY_STABLE;
-$plugin->release = '2.1 for Moodle 2.6+';
+$plugin->release = '2.1 for Moodle 3.4+';
