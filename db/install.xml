@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <XMLDB PATH="question/type/mtf/db" VERSION="20140924"
-	COMMENT="XMLDB file for Moodle question/type/matrix" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	COMMENT="XMLDB file for Moodle question/type/mtf" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:noNamespaceSchemaLocation="../../../../lib/xmldb/xmldb.xsd">
 	<TABLES>
 		<TABLE NAME="qtype_mtf_options" COMMENT="Contains info about ETHz MTF questions">
