@@ -334,7 +334,6 @@ class qtype_mtf_edit_form extends question_edit_form {
                 get_string_manager()->load_component_strings('qtype_mtf', current_language())) as $string) {
             $PAGE->requires->string_for_js($string, 'qtype_mtf');
         }
-        $PAGE->requires->jquery();
         $PAGE->requires->yui_module('moodle-qtype_mtf-form', '', array(0
         ));
     }
