@@ -287,22 +287,17 @@ body#page-question-type-mtf div[id^=fgroup_id_weightsarray] {
 @supports (display:-ms-grid) {
     body#page-question-type-mtf #id_questiontexteditable,
     body#page-question-type-mtf #id_generalfeedbackeditable,
-    body#page-question-type-mtf .optionbox {
+    body#page-question-type-mtf .optionbox,
+    .que.mtf .optiontext {
         word-break: break-all;
-    }   
-	.que.mtf .optiontext {
-		word-break: break-all;
-	}
+    }
 }
 
 /* Chrome, Opera, Firefox, ... */
 body#page-question-type-mtf #id_questiontexteditable,
 body#page-question-type-mtf #id_generalfeedbackeditable,
-body#page-question-type-mtf .optionbox {
+body#page-question-type-mtf .optionbox,
+.que.mtf .optiontext {
     word-break: break-word;
     overflow-wrap: anywhere;
-}
-.que.mtf .optiontext {
-	word-break: break-word;
-	overflow-wrap: anywhere;
 }
