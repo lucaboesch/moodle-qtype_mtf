@@ -283,6 +283,11 @@ body#page-question-type-mtf div[id^=fgroup_id_weightsarray] {
     width: 1%;
 }
 
+#page-mod-quiz-review .que.mtf table .c2, 
+#page-mod-quiz-review .que.mtf table .c4 {
+    width: 40%;
+}
+
 /* Microsoft Edge */
 @supports (display:-ms-grid) {
     body#page-question-type-mtf #id_questiontexteditable,
