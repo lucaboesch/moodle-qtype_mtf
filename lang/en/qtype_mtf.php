@@ -30,6 +30,7 @@ $string['answernumberingnone'] = 'No numbering';
 $string['configintro'] = 'Default values for Multiple True/False questions.';
 $string['configscoringmethod'] = 'Default scoring method for Multiple True/False questions.';
 $string['configshuffleanswers'] = 'Default setting for option shuffling in Multiple True/False questions.';
+$string['deletedchoice'] = 'This choice was deleted after the attempt was started.';
 $string['enterfeedbackhere'] = 'Enter feedback here.';
 $string['entergeneralfeedbackhere'] = 'Enter general feedback here.';
 $string['enteroptionhere'] = '';

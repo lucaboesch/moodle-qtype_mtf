@@ -32,6 +32,7 @@ $string['answersingleyes'] = 'Nur eine Antwort erlauben';
 $string['configintro'] = 'Standardeinstellungen für Mehrfach Wahr/Falsch-Fragen.';
 $string['configscoringmethod'] = 'Standard Bewertung für Mehrfach Wahr/Falsch-Fragen.';
 $string['configshuffleanswers'] = 'Standardeinstellung für das Mischen der Wahlantworten.';
+$string['deletedchoice'] = 'Diese Antwort wurde gelöscht, nachdem der Test gestartet worden ist.';
 $string['enterfeedbackhere'] = 'Feedback hinzufügen.';
 $string['entergeneralfeedbackhere'] = 'Allgemeines Feedback hinzufügen.';
 $string['enteroptionhere'] = '';
