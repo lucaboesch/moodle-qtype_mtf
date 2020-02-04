@@ -23,23 +23,13 @@
  */
 
 defined('MOODLE_INTERNAL') || die();
-
-/**
- * Upgrade code for the mtf question type.
- *
- * @param int $oldversion the version we are upgrading from.
- */
-function xmldb_qtype_mtf_upgrade($oldversion) {
-    global $CFG, $DB;
-
-    $dbman = $DB->get_manager();
-
-    $table = new xmldb_table('qtype_mtf_options');
-    $oldfield = new xmldb_field('shuffleoptions', XMLDB_TYPE_INTEGER, '4', null, XMLDB_NOTNULL, null, '1');
-
-    if ($dbman->field_exists($table, $oldfield)) {
-        $dbman->rename_field($table, $oldfield, 'shuffleanswers');
-    }
-
-    return true;
-}
+$addons = [
+    'qtype_mtf' => [
+        'handlers' => [
+            'mtf' => [
+                'delegate' => 'CoreQuestionDelegate',
+                'method' => 'mtf_view'
+            ]
+        ]
+    ]
+];
