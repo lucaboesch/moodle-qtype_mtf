@@ -1,10 +1,12 @@
 <section ion-list *ngIf="question.text || question.text === ''" class="qtype-mtf">
     <ion-item text-wrap>
         <p>
-            <core-format-text [component]="component" [componentId]="componentId" [text]="question.text"></core-format-text>
+            <core-format-text [component]="component" [componentId]="componentId" [text]="question.text">
+            </core-format-text>
         </p>
         <p *ngIf="question.prompt">
-            <core-format-text [component]="component" [componentId]="componentId" [text]="question.prompt"></core-format-text>
+            <core-format-text [component]="component" [componentId]="componentId" [text]="question.prompt">
+            </core-format-text>
         </p>
     </ion-item>
     <ng-container>
@@ -12,21 +14,25 @@
             <ion-col></ion-col>
             <ion-col>
                 <ion-label>
-                    <core-format-text [component]="component" [text]="question.headerc1"></core-format-text>
+                    <core-format-text [component]="component" [text]="question.headerc1">
+                    </core-format-text>
                 </ion-label>
             </ion-col>
             <ion-col>
                 <ion-label>
-                    <core-format-text [component]="component" [text]="question.headerc2"></core-format-text>
+                    <core-format-text [component]="component" [text]="question.headerc2">
+                    </core-format-text>
                 </ion-label>
             </ion-col>
         </ion-row>
         <ng-container text-wrap *ngFor="let option of question.options" >
-            <ion-list radio-group [attr.name]="option.name" [(ngModel)]="option.selection" [ngClass]="option.qclass" ngDefaultControl>
+            <ion-list radio-group
+                [attr.name]="option.name" [(ngModel)]="option.selection" [ngClass]="option.qclass" ngDefaultControl>
                 <ion-row class="item-md">
                     <ion-col>
                         <ion-label>
-                            <core-format-text [component]="component" [componentId]="componentId" [text]="option.text"></core-format-text>
+                            <core-format-text [component]="component" [componentId]="componentId" [text]="option.text">
+                            </core-format-text>
                             <p *ngIf="option.feedback" class="core-question-feedback-container">
                                 <core-format-text [text]="option.feedback"></core-format-text>
                             </p>
@@ -47,10 +53,12 @@
         <hr>
         <ion-item (click)="scoringmethodhelp=!scoringmethodhelp">
             <ion-icon name="help-circle" item-start></ion-icon>
-            <core-format-text [component]="component" [componentId]="componentId" [text]="question.scoringmethod" item-start></core-format-text>
+            <core-format-text [component]="component" [componentId]="componentId" [text]="question.scoringmethod" item-start>
+            </core-format-text>
         </ion-item>
         <ion-item *ngIf="scoringmethodhelp">
-            <core-format-text [component]="component" [componentId]="componentId" [text]="question.scoringmethodhelp"></core-format-text>
+            <core-format-text [component]="component" [componentId]="componentId" [text]="question.scoringmethodhelp">
+            </core-format-text>
         </ion-item>
     </div>
 </section>

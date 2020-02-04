@@ -237,7 +237,7 @@ class qtype_mtf_renderer extends qtype_renderer {
         }
 
         if (get_string_manager()->string_exists('scoring' . $question->scoringmethod . '_help', 'qtype_mtf')) {
-            $label =  get_string('scoringmethod', 'qtype_mtf'). ': <b>' . ucfirst($outputscoringmethod) . '</b>';
+            $label = get_string('scoringmethod', 'qtype_mtf') . ': <b>' . ucfirst($outputscoringmethod) . '</b>';
             $result .= html_writer::tag('div',
                 '<br>'. $label . $OUTPUT->help_icon('scoring' . $question->scoringmethod, 'qtype_mtf'),
                 array('id' => 'scoringmethodinfo_q' . $question->id,
