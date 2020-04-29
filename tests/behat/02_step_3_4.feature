@@ -26,7 +26,7 @@ Feature: Step 3 and Step 4
   Scenario: TESTCASE 3.
 
     # Edit the question
-    And I choose "Edit question" action for "MTF-Question-001" in the question bank
+    When I choose "Edit question" action for "MTF-Question-001" in the question bank
     And I set the following fields to these values:
       | id_name | |
     And I press "id_submitbutton"

@@ -222,7 +222,7 @@ class qtype_mtf_renderer extends qtype_renderer {
     /**
      * Returns a string containing the rendererd question's scoring method.
      * Appends an info icon containing information about the scoring method.
-     * @param qtype_sc_question $question
+     * @param qtype_mtf_question $question
      * @return string
      */
     private function showscoringmethod($question) {
