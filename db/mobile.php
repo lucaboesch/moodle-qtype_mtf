@@ -28,7 +28,11 @@ $addons = [
         'handlers' => [
             'mtf' => [
                 'delegate' => 'CoreQuestionDelegate',
-                'method' => 'mtf_view'
+                'method' => 'mtf_view',
+                'styles' => [
+                    'url' => '/question/type/mtf/mobile/styles_app.css',
+                    'version' => '0.02'
+                ]
             ]
         ]
     ]
