@@ -268,7 +268,7 @@ foreach ($questions as $question) {
             foreach ($mtfrows as $key => $row) {
                 $entry = new stdClass();
                 $entry->question = $question->id;
-                $entry->answer = $mtfrows[$key]->optiontext;
+                $entry->answer = trim($mtfrows[$key]->optiontext);
                 $entry->answerformat = $mtfrows[$key]->optiontextformat;
                 $entry->fraction = $questionweights["message"][$row->number];
                 $entry->feedback = $mtfrows[$key]->optionfeedback;
@@ -282,7 +282,7 @@ foreach ($questions as $question) {
                     $contextid,
                     $mtfrows[$key]->id,
                     $questionanswerid,
-                    $mtfrows[$key]->optiontext,
+                    trim($mtfrows[$key]->optiontext),
                     "optiontext",
                     "qtype_mtf",
                     "question",

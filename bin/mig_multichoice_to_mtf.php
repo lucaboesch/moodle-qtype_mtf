@@ -283,7 +283,7 @@ foreach ($questions as $question) {
                 $entry = new stdClass();
                 $entry->questionid = $question->id;
                 $entry->number = $iterator++;
-                $entry->optiontext = $questionanswers[$key]->answer;
+                $entry->optiontext = trim($questionanswers[$key]->answer);
                 $entry->optiontextformat = FORMAT_HTML;
                 $entry->optionfeedback = $questionanswers[$key]->feedback;
                 $entry->optionfeedbackformat = FORMAT_HTML;
@@ -296,7 +296,7 @@ foreach ($questions as $question) {
                     $contextid,
                     $questionanswers[$key]->id,
                     $mtfrowid,
-                    $questionanswers[$key]->answer,
+                    trim($questionanswers[$key]->answer),
                     "answer",
                     "qtype_mtf",
                     "optiontext");
