@@ -197,7 +197,7 @@ class qtype_mtf_question extends question_graded_automatically_with_countback {
      * @return bool whether this response is a complete answer to this question.
      */
     public function is_complete_response(array $response) {
-        if (count($response) == count($this->rows)) {
+        if ($this->get_num_selected_choices($response) == count($this->rows)) {
             return true;
         } else {
             return false;
@@ -205,9 +205,8 @@ class qtype_mtf_question extends question_graded_automatically_with_countback {
     }
 
     public function is_gradable_response(array $response) {
-        unset($response['_order']);
         if ($this->scoringmethod == 'subpoints') {
-            if (count($response) > 0) {
+            if ($this->get_num_selected_choices($response) > 0) {
                 return true;
             } else {
                 return false;

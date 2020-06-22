@@ -216,13 +216,6 @@ class qtype_mtf extends question_type {
             $options->id = $DB->insert_record('qtype_mtf_options', $options);
         }
 
-        $options->scoringmethod = $question->scoringmethod;
-        $options->shuffleanswers = $question->shuffleanswers;
-        $options->numberofrows = $question->numberofrows;
-        $options->numberofcolumns = $question->numberofcolumns;
-        $options->answernumbering = $question->answernumbering;
-        $DB->update_record('qtype_mtf_options', $options);
-
         $this->save_hints($question, true);
 
         // Insert all the new rows.
@@ -235,7 +228,7 @@ class qtype_mtf extends question_type {
         $countfilledrows = 0;
         $newoptions = new stdClass();
 
-        for ($i = 1; $i <= $options->numberofrows; ++$i) {
+        for ($i = 1; $i <= $question->numberofrows; ++$i) {
             $optiontext = $question->option[$i - 1]['text'];
             // Remove HTML tags.
             $optiontext = trim(strip_tags($optiontext, '<img><video><audio><iframe><embed>'));
@@ -258,12 +251,17 @@ class qtype_mtf extends question_type {
                 $countfilledrows++;
             }
         }
+
+        $options->scoringmethod = $question->scoringmethod;
+        $options->shuffleanswers = $question->shuffleanswers;
+        $options->numberofrows = $countfilledrows;
+        $options->numberofcolumns = $question->numberofcolumns;
+        $options->answernumbering = $question->answernumbering;
+        $DB->update_record('qtype_mtf_options', $options);
+
         unset($question->option);
         unset($question->feedback);
         unset($question->weightbutton);
-
-        // Update number of options to the ones that are filled.
-        $options->numberofrows = $countfilledrows;
 
         $question->option = $newoptions->option;
         $question->feedback = $newoptions->feedback;
