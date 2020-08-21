@@ -217,7 +217,10 @@ foreach ($questions as $question) {
 
     // Checking for possible errors before doing anyting.
     // Getting question weights in case of a complete record.
-    if (!isset($questionanswers) || !isset($multichoiceoptions->single) || !isset($migratesingle) || !isset($questionhints)) {
+    if ((!isset($questionanswers) || count($questionanswers) == 0)
+    || !isset($multichoiceoptions->single)
+    || !isset($migratesingle)
+    || !isset($questionhints)) {
         $questionweights = array("error" => true, "message" => "Database records incomplete.", "notices" => []);
     } else {
         $questionweights = get_weights($questionanswers, $multichoiceoptions->single, $migratesingle);
@@ -245,7 +248,7 @@ foreach ($questions as $question) {
             // Get contextid from question category.
             $contextid = $DB->get_field('question_categories', 'contextid', array('id' => $question->category));
 
-            if (!isset($contextid)) {
+            if (!isset($contextid) || $contextid == false) {
                 echo "<br/>[<font color='red'>ERR</font>] No context id found for this question.";
                 continue;
             }

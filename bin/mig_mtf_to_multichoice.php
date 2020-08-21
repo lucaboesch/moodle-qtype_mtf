@@ -216,7 +216,12 @@ foreach ($questions as $question) {
 
     // Checking for possible errors before doing anyting.
     // Getting question fractions in case of a complete record.
-    if (!isset($mtfcolumns) || !isset($mtfoptions) || !isset($mtfrows) || !isset($mtfweights) || !isset($questionhints)) {
+
+    if ((!isset($mtfcolumns) || count($mtfcolumns) == 0)
+    || (!isset($mtfoptions) || $mtfoptions == false)
+    || (!isset($mtfrows) || count($mtfrows) == 0)
+    || (!isset($mtfweights) || count($mtfweights) == 0)
+    || !isset($questionhints)) {
         $questionweights = array("error" => true, "message" => "Database records incomplete.", "notices" => []);
     } else {
         $questionweights = get_weights($mtfweights, $autoweights, $mtfcolumns);
@@ -245,7 +250,7 @@ foreach ($questions as $question) {
             // Get contextid from question category.
             $contextid = $DB->get_field('question_categories', 'contextid', array('id' => $question->category));
 
-            if (!isset($contextid)) {
+            if (!isset($contextid) || $contextid == false) {
                 echo "<br/>[<font color='red'>ERR</font>] No context id found for this question.";
                 continue;
             }
