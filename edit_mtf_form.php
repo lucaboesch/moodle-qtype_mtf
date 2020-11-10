@@ -162,6 +162,11 @@ class qtype_mtf_edit_form extends question_edit_form {
                     array($this->question->options->answernumbering
                     ));
         }
+
+        $mform->addElement('text', 'idnumber', get_string('idnumber', 'question'), 'maxlength="100"  size="10"');
+        $mform->addHelpButton('idnumber', 'idnumber', 'question');
+        $mform->setType('idnumber', PARAM_RAW);
+
         // Any questiontype specific fields.
         $this->definition_inner($mform);
 
@@ -497,6 +502,8 @@ class qtype_mtf_edit_form extends question_edit_form {
      * @see question_edit_form::validation()
      */
     public function validation($data, $files) {
+        global $DB;
+
         $errors = parent::validation($data, $files);
         // Check for empty option texts.
         $countfulloption = 0;
@@ -523,6 +530,30 @@ class qtype_mtf_edit_form extends question_edit_form {
         for ($j = 1; $j <= $data['numberofcolumns']; ++$j) {
             if (trim(strip_tags($data["responsetext_" . $j])) == false) {
                 $errors["responsetext_" . $j] = get_string('mustsupplyvalue', 'qtype_mtf');
+            }
+        }
+
+        // Can only have one idnumber per category.
+        if (strpos($data['category'], ',') !== false) {
+            list($category, $categorycontextid) = explode(',', $data['category']);
+        } else {
+            $category = $data['category'];
+        }
+        if (isset($data['idnumber']) && ((string) $data['idnumber'] !== '')) {
+            if (empty($data['usecurrentcat']) && !empty($data['categorymoveto'])) {
+                $categoryinfo = $data['categorymoveto'];
+            } else {
+                $categoryinfo = $data['category'];
+            }
+            list($categoryid, $notused) = explode(',', $categoryinfo);
+            $conditions = 'category = ? AND idnumber = ?';
+            $params = [$categoryid, $data['idnumber']];
+            if (!empty($this->question->id)) {
+                $conditions .= ' AND id <> ?';
+                $params[] = $this->question->id;
+            }
+            if ($DB->record_exists_select('question', $conditions, $params)) {
+                $errors['idnumber'] = get_string('idnumbertaken', 'error');
             }
         }
 
