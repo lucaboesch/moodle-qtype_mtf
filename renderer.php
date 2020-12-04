@@ -167,15 +167,29 @@ class qtype_mtf_renderer extends qtype_renderer {
             }
 
             // Add the formated option text to the table.
-            $rowtext = $this->number_in_style($rowcount, $question->answernumbering) . $question->make_html_inline(
-                    $question->format_text($row->optiontext, $row->optiontextformat, $qa,
-                            'qtype_mtf', 'optiontext', $row->id));
-            $rowcount++;
-            $cell = new html_table_cell(
-                    '<span class="optiontext"><label>' . $rowtext .
-                             '</label></span>');
+            $rowtext = '<span class="optiontext">' .
+                        $question->make_html_inline(
+                            $this->number_in_style(
+                                $rowcount,
+                                $question->answernumbering
+                            ) .
+                            $question->format_text(
+                                $row->optiontext,
+                                $row->optiontextformat,
+                                $qa,
+                                'qtype_mtf',
+                                'optiontext',
+                                $row->id
+                            )
+                        ) .
+                        '</span>';
+
+            $cell = new html_table_cell($rowtext);
             $cell->attributes['class'] = 'optiontext';
             $rowdata[] = $cell;
+
+            $rowcount++;
+
             // Has a selection been made for this option?
             $isselected = $question->is_answered($response, $key);
             // For correctness we have to grade the option...
