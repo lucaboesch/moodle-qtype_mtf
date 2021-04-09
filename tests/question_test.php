@@ -159,6 +159,10 @@ class qtype_mtf_question_test extends advanced_testcase {
         $this->assertTrue($question->is_gradable_response(array('option0' => '1')));
         $this->assertTrue($question->is_gradable_response(array('option0' => '1', 'option1' => '1')));
         $this->assertTrue($question->is_gradable_response(array('option0' => '1', 'option1' => '2')));
+
+        $question->scoringmethod = 'mtfonezero';
+        $this->assertFalse($question->is_gradable_response(array('option0' => '1')));
+        $this->assertTrue($question->is_gradable_response(array('option0' => '1', 'option1' => '1')));
     }
 
     public function test_get_order() {
