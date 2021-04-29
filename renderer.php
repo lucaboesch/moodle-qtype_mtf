@@ -147,7 +147,7 @@ class qtype_mtf_renderer extends qtype_renderer {
                 $qtypemtfid = 'qtype_mtf_' . $question->id;
                 $datacol = 'data-mtf="' . $qtypemtfid . '"';
                 $ischecked = false;
-                if (array_key_exists($field, $response) && ($response[$field] == $column->number)) {
+                if (property_exists((object) $response, $field) && ($response[$field] == $column->number)) {
                     $ischecked = true;
                 }
                 $datamulti = 'data-multimtf="1"';

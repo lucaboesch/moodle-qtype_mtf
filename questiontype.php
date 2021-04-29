@@ -515,7 +515,7 @@ class qtype_mtf extends question_type {
     private function weight_records_to_array($weightrecords) {
         $weights = array();
         foreach ($weightrecords as $id => $weight) {
-            if (!array_key_exists($weight->rownumber, $weights)) {
+            if (!property_exists((object) $weights, $weight->rownumber)) {
                 $weights[$weight->rownumber] = array();
             }
             $weights[$weight->rownumber][$weight->columnnumber] = $weight;

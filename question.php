@@ -285,7 +285,7 @@ class qtype_mtf_question extends question_graded_automatically_with_countback {
             $field = $this->field($key);
             $row = $this->rows[$rowid];
 
-            if (array_key_exists($field, $response) && $response[$field]) {
+            if (property_exists((object) $response, $field) && $response[$field]) {
                 $selectedcolumns[$rowid] = $response[$field];
             } else {
                 $selectedcolumns[$rowid] = 0;
