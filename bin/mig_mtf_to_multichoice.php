@@ -15,6 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Migration script for migration to multichoice
+ *
  * @package     qtype_mtf
  * @author      Amr Hourani (amr.hourani@id.ethz.ch)
  * @author      Martin Hanusch (martin.hanusch@let.ethz.ch)
@@ -247,7 +249,7 @@ foreach ($questions as $question) {
         continue;
     }
 
-    // Pretesting files
+    // Pretesting files.
 
     $success = 1;
     $status = "";
@@ -479,7 +481,11 @@ echo $nummigrated . "/" . count($questions) . " questions " . ($dryrun == 1 ? "w
 echo "=========================================================================================<br/>\n";
 die();
 
-// Getting the subcategories of a certain category.
+/**
+ * Getting all subcategories of a given category.
+ * @param int $categoryid
+ * @return array $subcategories
+ */
 function get_subcategories($categoryid) {
     global $DB;
 
@@ -492,8 +498,13 @@ function get_subcategories($categoryid) {
     return $subcategories;
 }
 
-// Mapping the mtf weights to multichoice fractions.
-// This function checks for possible mapping problems.
+/**
+ * Mapping the mtf weights to multichoice fractions.This function also checks for possible mapping problems.
+ * @param array $weights
+ * @param bool $autoweights
+ * @param array $columns
+ * @return array
+ */
 function get_weights($weights, $autoweights, $columns) {
 
     // Getting the Moodle fractions.
@@ -600,6 +611,11 @@ function get_weights($weights, $autoweights, $columns) {
     return array("error" => false, "message" => $answers, "notices" => $notices);
 }
 
+/**
+ * Extract the image filenames out of a certain text, e.g questiontext and returning the results
+ * @param string $text
+ * @return array
+ */
 function get_image_filenames($text) {
     $result = array();
     $strings = preg_split("/<img|<source/i", $text);
@@ -614,14 +630,25 @@ function get_image_filenames($text) {
     return $result;
 }
 
-// Copying files from one question to another.
+/**
+ * Copy files from one question to another.
+ * @param object $fs
+ * @param int $contextid
+ * @param int $oldid
+ * @param int $newid
+ * @param string $text
+ * @param string $type
+ * @param string $olcdomponent
+ * @param string $newcomponent
+ * @param string $filearea
+ */
 function copy_files($fs, $contextid, $oldid, $newid, $text, $type, $olcdomponent, $newcomponent, $filearea) {
     $filenames = get_image_filenames($text);
     foreach ($filenames as $filename) {
 
-        $parsed_filename_url = parse_url($filename)["path"];
-        if (isset($parsed_filename_url)) {
-            $filename = $parsed_filename_url;
+        $parsedfilenameurl = parse_url($filename)["path"];
+        if (isset($parsedfilenameurl)) {
+            $filename = $parsedfilenameurl;
         }
 
         $file = $fs->get_file($contextid, $olcdomponent, $type, $oldid, '/', $filename);
@@ -637,7 +664,16 @@ function copy_files($fs, $contextid, $oldid, $newid, $text, $type, $olcdomponent
     }
 }
 
-// Testing files
+/**
+ * Check if files are actually existent
+ * @param object $fs
+ * @param int $contextid
+ * @param int $oldid
+ * @param string $text
+ * @param string $type
+ * @param string $olcdomponent
+ * @return array
+ */
 function test_files($fs, $contextid, $oldid, $text, $type, $olcdomponent) {
 
     $success = 1;
@@ -646,9 +682,9 @@ function test_files($fs, $contextid, $oldid, $text, $type, $olcdomponent) {
     $filenames = get_image_filenames($text);
     foreach ($filenames as $filename) {
 
-        $parsed_filename_url = parse_url($filename)["path"];
-        if (isset($parsed_filename_url)) {
-            $filename = $parsed_filename_url;
+        $parsedfilenameurl = parse_url($filename)["path"];
+        if (isset($parsedfilenameurl)) {
+            $filename = $parsedfilenameurl;
         }
 
         $file = $fs->get_file($contextid, $olcdomponent, $type, $oldid, '/', $filename);

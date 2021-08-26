@@ -15,6 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Unit tests for qtype_mtf definition class.
+ *
  * @package     qtype_mtf
  * @author      Amr Hourani (amr.hourani@id.ethz.ch)
  * @author      Martin Hanusch (martin.hanusch@let.ethz.ch)
@@ -30,10 +32,15 @@ require_once($CFG->dirroot . '/question/type/edit_question_form.php');
 require_once($CFG->dirroot . '/question/type/mtf/edit_mtf_form.php');
 
 /**
- * @group qtype_mtf
+ * Unit tests for qtype_mtf definition class.
+ *
+ * @copyright   2016 ETHZ {@link http://ethz.ch/}
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @group       qtype_mtf
  */
 class qtype_mtf_test extends advanced_testcase {
 
+    /** @var object qtype */
     protected $qtype;
 
     protected function setUp(): void {
@@ -48,6 +55,11 @@ class qtype_mtf_test extends advanced_testcase {
         $this->assertEquals($this->qtype->name(), 'mtf');
     }
 
+    /**
+     * Get some test question data.
+     * @return object the data to construct a question like
+     * {@see test_question_maker::make_question($questiondata)}.
+     */
     protected function get_test_question_data() {
         $qdata = new stdClass();
         $qdata->qtype = 'mtf';
@@ -173,20 +185,33 @@ class qtype_mtf_test extends advanced_testcase {
         return $qdata;
     }
 
+    /**
+     * Test can_analyse_responses
+     */
     public function test_can_analyse_responses() {
         $this->assertTrue($this->qtype->can_analyse_responses());
     }
 
+    /**
+     * Test get_random_guess_score_mtf
+     */
     public function test_get_random_guess_score_mtf() {
         $question = $this->get_test_question_data();
         $question->options->scoringmethod = "mtf";
         $this->assertEquals(0, $this->qtype->get_random_guess_score($question));
     }
+
+    /**
+     * Test get_random_guess_score_subpoints
+     */
     public function test_get_random_guess_score_subpoints() {
         $question = $this->get_test_question_data();
         $this->assertEquals(0.5, $this->qtype->get_random_guess_score($question));
     }
 
+    /**
+     * Test get_possible_responses_subpoints
+     */
     public function test_get_possible_responses_subpoints() {
         $question = $this->get_test_question_data();
         $responses = $this->qtype->get_possible_responses($question);
@@ -204,12 +229,18 @@ class qtype_mtf_test extends advanced_testcase {
         ), $this->qtype->get_possible_responses($question));
     }
 
+    /**
+     * (non-PHPdoc)
+     * @return string
+     */
     public function get_question_saving_which() {
         return array(array('question_one'), array('question_two'));
     }
 
     /**
+     * Test question saving
      * @dataProvider get_question_saving_which
+     * @param string $which
      */
     public function test_question_saving_question_one($which) {
         $this->resetAfterTest(true);
@@ -273,6 +304,9 @@ class qtype_mtf_test extends advanced_testcase {
         }
     }
 
+    /**
+     * Test get_question_options.
+     */
     public function test_get_question_options() {
         global $DB;
         $this->resetAfterTest(true);

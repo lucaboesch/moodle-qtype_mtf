@@ -1,5 +1,5 @@
-@qtype @qtype_mtf @qtype_mtf_step_23
-Feature: Step 23
+@qtype @qtype_mtf @qtype_mtf_6
+Feature: Step 6
 
   Background:
     Given the following "users" exist:
@@ -16,11 +16,11 @@ Feature: Step 23
     And the following "course enrolments" exist:
       | user     | course | role           |
       | teacher1 | c1     | editingteacher |
-      | student1 | c1     | student        |   
-      | student2 | c1     | student        |   
-      | student3 | c1     | student        |  
-      | student4 | c1     | student        |  
-      | student5 | c1     | student        |  
+      | student1 | c1     | student        |
+      | student2 | c1     | student        |
+      | student3 | c1     | student        |
+      | student4 | c1     | student        |
+      | student5 | c1     | student        |
     And the following "activities" exist:
       | activity | name   | intro              | course | idnumber |
       | quiz     | Quiz 1 | Quiz 1 for testing | c1     | quiz1    |
@@ -28,14 +28,93 @@ Feature: Step 23
       | contextlevel | reference | name           |
       | Course       | c1        | Default for c1 |
     And the following "questions" exist:
-      | questioncategory | qtype | name           | template       |
-      | Default for c1   | mtf   | MTF-Question-2 | question_two   |
+      | questioncategory | qtype | name           | template     |
+      | Default for c1   | mtf   | MTF-Question-2 | question_two |
     And quiz "Quiz 1" contains the following questions:
       | question       | page |
       | MTF-Question-2 | 1    |
 
   @javascript
-  Scenario: TESTCASE 23.
+  Scenario: Testcase 19
+  # Check wether scoringmethod info is displayed
+    When I log in as "admin"
+    When I navigate to "Plugins > Question types > Multiple True False (ETH)" in site administration
+    And I should see "Default values for Multiple True/False questions."
+    And I set the following fields to these values:
+      | id_s_qtype_mtf_showscoringmethod | checked |
+    And I press "Save changes"
+    And I am on "Course 1" course homepage
+    And I follow "Quiz 1"
+    And I press "Attempt quiz now"
+    Then "[id^='scoringmethodinfo_q'][label='Scoring method: <b>Subpoints</b>']" "css_element" should exist
+
+  @javascript
+  Scenario: Testcase 19
+  # Check feedback
+  # Solving quiz as student1: 50% correct options (SUBPOINTS are activated)
+    When I log in as "student1"
+    And I am on "Course 1" course homepage
+    And I follow "Quiz 1"
+    And I press "Attempt quiz now"
+    And I click on ".qtype_mtf_row:contains('option text 1') input[value=1]" "css_element"
+    And I click on ".qtype_mtf_row:contains('option text 2') input[value=1]" "css_element"
+    And I click on ".qtype_mtf_row:contains('option text 3') input[value=1]" "css_element"
+    And I click on ".qtype_mtf_row:contains('option text 4') input[value=1]" "css_element"
+    And I click on ".qtype_mtf_row:contains('option text 5') input[value=1]" "css_element"
+    And I click on ".qtype_mtf_row:contains('option text 6') input[value=1]" "css_element"
+    And I click on ".qtype_mtf_row:contains('option text 7') input[value=1]" "css_element"
+    And I click on ".qtype_mtf_row:contains('option text 8') input[value=1]" "css_element"
+    And I press "Finish attempt ..."
+    And I press "Submit all and finish"
+    And I click on "Submit all and finish" "button" in the "Confirmation" "dialogue"
+    Then I should see "feedback to option 1"
+    And I should see "feedback to option 2"
+    And I should see "feedback to option 3"
+    And I should see "feedback to option 4"
+    And I should see "feedback to option 5"
+    And I should see "feedback to option 6"
+    And I should see "feedback to option 8"
+    And I should see "feedback to option 1"
+    And I should see "option text 1: True"
+    And I should see "option text 2: True"
+    And I should see "option text 3: True"
+    And I should see "option text 4: True"
+    And I should see "option text 5: False"
+    And I should see "option text 6: False"
+    And I should see "option text 7: False"
+    And I should see "option text 8: False"
+    And I log out
+
+  @javascript
+  Scenario: Testcase 20
+  # Check if answers are stored correctly
+    When I log in as "student1"
+    And I am on "Course 1" course homepage
+    And I follow "Quiz 1"
+    And I press "Attempt quiz now"
+    And I click on ".qtype_mtf_row:contains('option text 1') input[value=1]" "css_element"
+    And I click on ".qtype_mtf_row:contains('option text 2') input[value=1]" "css_element"
+    And I click on ".qtype_mtf_row:contains('option text 3') input[value=1]" "css_element"
+    And I click on ".qtype_mtf_row:contains('option text 4') input[value=1]" "css_element"
+    And I click on ".qtype_mtf_row:contains('option text 5') input[value=1]" "css_element"
+    And I click on ".qtype_mtf_row:contains('option text 6') input[value=1]" "css_element"
+    And I click on ".qtype_mtf_row:contains('option text 7') input[value=2]" "css_element"
+    And I click on ".qtype_mtf_row:contains('option text 8') input[value=2]" "css_element"
+    And I press "Finish attempt ..."
+    And I press "Submit all and finish"
+    And I click on "Submit all and finish" "button" in the "Confirmation" "dialogue"
+    Then ".qtype_mtf_row:contains('option text 1') input[value=1]" "css_element" should exist
+    And ".qtype_mtf_row:contains('option text 2') input[value=1]" "css_element" should exist
+    And ".qtype_mtf_row:contains('option text 3') input[value=1]" "css_element" should exist
+    And ".qtype_mtf_row:contains('option text 4') input[value=1]" "css_element" should exist
+    And ".qtype_mtf_row:contains('option text 5') input[value=1]" "css_element" should exist
+    And ".qtype_mtf_row:contains('option text 6') input[value=1]" "css_element" should exist
+    And ".qtype_mtf_row:contains('option text 7') input[value=2]" "css_element" should exist
+    And ".qtype_mtf_row:contains('option text 8') input[value=2]" "css_element" should exist
+    And I log out
+
+  @javascript
+  Scenario: Testcase 10, 11
   # Check grade: Verify that all possible mappings from
   # responses (correct, partially correct, incorrect) to
   # points function as specified for the different scoring
@@ -115,16 +194,40 @@ Feature: Step 23
     And I click on "tr:contains('student1@moodle.com') a:contains('Review attempt')" "css_element"
     Then ".state:contains('Correct')" "css_element" should exist
     And ".grade:contains('Mark 1.00 out of 1.00')" "css_element" should exist
+    And ".qtype_mtf_row:contains('option text 1') input[value=1]" "css_element" should exist
+    And ".qtype_mtf_row:contains('option text 2') input[value=1]" "css_element" should exist
+    And ".qtype_mtf_row:contains('option text 3') input[value=1]" "css_element" should exist
+    And ".qtype_mtf_row:contains('option text 4') input[value=1]" "css_element" should exist
+    And ".qtype_mtf_row:contains('option text 5') input[value=2]" "css_element" should exist
+    And ".qtype_mtf_row:contains('option text 6') input[value=2]" "css_element" should exist
+    And ".qtype_mtf_row:contains('option text 7') input[value=2]" "css_element" should exist
+    And ".qtype_mtf_row:contains('option text 8') input[value=2]" "css_element" should exist
     And I follow "Quiz 1"
     And I navigate to "Responses" in current page administration
     And I click on "tr:contains('student2@moodle.com') a:contains('Review attempt')" "css_element"
     Then ".state:contains('Partially correct')" "css_element" should exist
     And ".grade:contains('Mark 0.50 out of 1.00')" "css_element" should exist
+    And ".qtype_mtf_row:contains('option text 1') input[value=1]" "css_element" should exist
+    And ".qtype_mtf_row:contains('option text 2') input[value=1]" "css_element" should exist
+    And ".qtype_mtf_row:contains('option text 3') input[value=1]" "css_element" should exist
+    And ".qtype_mtf_row:contains('option text 4') input[value=1]" "css_element" should exist
+    And ".qtype_mtf_row:contains('option text 5') input[value=1]" "css_element" should exist
+    And ".qtype_mtf_row:contains('option text 6') input[value=1]" "css_element" should exist
+    And ".qtype_mtf_row:contains('option text 7') input[value=1]" "css_element" should exist
+    And ".qtype_mtf_row:contains('option text 8') input[value=1]" "css_element" should exist
     And I follow "Quiz 1"
     And I navigate to "Responses" in current page administration
     And I click on "tr:contains('student3@moodle.com') a:contains('Review attempt')" "css_element"
     Then ".state:contains('Incorrect')" "css_element" should exist
     And ".grade:contains('Mark 0.00 out of 1.00')" "css_element" should exist
+    And ".qtype_mtf_row:contains('option text 1') input[value=2]" "css_element" should exist
+    And ".qtype_mtf_row:contains('option text 2') input[value=2]" "css_element" should exist
+    And ".qtype_mtf_row:contains('option text 3') input[value=2]" "css_element" should exist
+    And ".qtype_mtf_row:contains('option text 4') input[value=2]" "css_element" should exist
+    And ".qtype_mtf_row:contains('option text 5') input[value=1]" "css_element" should exist
+    And ".qtype_mtf_row:contains('option text 6') input[value=1]" "css_element" should exist
+    And ".qtype_mtf_row:contains('option text 7') input[value=1]" "css_element" should exist
+    And ".qtype_mtf_row:contains('option text 8') input[value=1]" "css_element" should exist
 
   # Set Scoring Method to MTF 1/0
     And I am on "Course 1" course homepage
@@ -154,7 +257,7 @@ Feature: Step 23
     And I click on "Submit all and finish" "button" in the "Confirmation" "dialogue"
     And I log out
 
-  # Solving quiz as student5: 000% correct options (MTF1/0 is activated)
+  # Solving quiz as student5: 0% correct options (MTF1/0 is activated)
     When I log in as "student5"
     And I am on "Course 1" course homepage
     And I follow "Quiz 1"
@@ -180,8 +283,24 @@ Feature: Step 23
     And I click on "tr:contains('student4@moodle.com') a:contains('Review attempt')" "css_element"
     Then ".state:contains('Correct')" "css_element" should exist
     And ".grade:contains('Mark 1.00 out of 1.00')" "css_element" should exist
+    And ".qtype_mtf_row:contains('option text 1') input[value=1]" "css_element" should exist
+    And ".qtype_mtf_row:contains('option text 2') input[value=1]" "css_element" should exist
+    And ".qtype_mtf_row:contains('option text 3') input[value=1]" "css_element" should exist
+    And ".qtype_mtf_row:contains('option text 4') input[value=1]" "css_element" should exist
+    And ".qtype_mtf_row:contains('option text 5') input[value=2]" "css_element" should exist
+    And ".qtype_mtf_row:contains('option text 6') input[value=2]" "css_element" should exist
+    And ".qtype_mtf_row:contains('option text 7') input[value=2]" "css_element" should exist
+    And ".qtype_mtf_row:contains('option text 8') input[value=2]" "css_element" should exist
     And I follow "Quiz 1"
     And I navigate to "Responses" in current page administration
     And I click on "tr:contains('student5@moodle.com') a:contains('Review attempt')" "css_element"
     Then ".state:contains('Incorrect')" "css_element" should exist
     And ".grade:contains('Mark 0.00 out of 1.00')" "css_element" should exist
+    And ".qtype_mtf_row:contains('option text 1') input[value=1]" "css_element" should exist
+    And ".qtype_mtf_row:contains('option text 2') input[value=1]" "css_element" should exist
+    And ".qtype_mtf_row:contains('option text 3') input[value=1]" "css_element" should exist
+    And ".qtype_mtf_row:contains('option text 4') input[value=1]" "css_element" should exist
+    And ".qtype_mtf_row:contains('option text 5') input[value=1]" "css_element" should exist
+    And ".qtype_mtf_row:contains('option text 6') input[value=1]" "css_element" should exist
+    And ".qtype_mtf_row:contains('option text 7') input[value=1]" "css_element" should exist
+    And ".qtype_mtf_row:contains('option text 8') input[value=1]" "css_element" should exist

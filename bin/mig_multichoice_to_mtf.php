@@ -15,6 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Migration script for migration to mtf
+ *
  * @package     qtype_mtf
  * @author      Amr Hourani (amr.hourani@id.ethz.ch)
  * @author      Martin Hanusch (martin.hanusch@let.ethz.ch)
@@ -246,7 +248,7 @@ foreach ($questions as $question) {
         continue;
     }
 
-    // Pretesting files
+    // Pretesting files.
 
     $success = 1;
     $status = "";
@@ -498,7 +500,11 @@ echo "SCRIPT DONE: Time needed: " . round(microtime(1) - $starttime, 4) . " seco
 echo $nummigrated . "/" . count($questions) . " questions " . ($dryrun == 1 ? "would be " : null) . "migrated.<br/>\n";
 echo "=========================================================================================<br/>\n";
 
-// Getting the subcategories of a certain category.
+/**
+ * Getting all subcategories of a given category.
+ * @param int $categoryid
+ * @return array $subcategories
+ */
 function get_subcategories($categoryid) {
     global $DB;
 
@@ -511,8 +517,13 @@ function get_subcategories($categoryid) {
     return $subcategories;
 }
 
-// Mapping the multichoice fractions to mtf weights.
-// This function checks for possible mapping problems.
+/**
+ * Mapping the multichoice fractions to mtf weights. This function checks for possible mapping problems.
+ * @param array $fractions
+ * @param int $single
+ * @param bool $migratesingle
+ * @return array $subcategories
+ */
 function get_weights($fractions, $single, $migratesingle) {
     $rownumber = 1;
     $notices = [];
@@ -562,6 +573,11 @@ function get_weights($fractions, $single, $migratesingle) {
     return array("error" => false, "message" => $answers, "notices" => $notices, "rownumber" => $rownumber);
 }
 
+/**
+ * Extract the image filenames out of a certain text, e.g questiontext and returning the results
+ * @param string $text
+ * @return array
+ */
 function get_image_filenames($text) {
     $result = array();
     $strings = preg_split("/<img|<source/i", $text);
@@ -577,14 +593,24 @@ function get_image_filenames($text) {
     return $result;
 }
 
-// Copying files from one question to another.
+/**
+ * Copy files from one question to another.
+ * @param object $fs
+ * @param int $contextid
+ * @param int $oldid
+ * @param int $newid
+ * @param string $text
+ * @param string $type
+ * @param string $component
+ * @param string $filearea
+ */
 function copy_files($fs, $contextid, $oldid, $newid, $text, $type, $component, $filearea) {
     $filenames = get_image_filenames($text);
     foreach ($filenames as $filename) {
 
-        $parsed_filename_url = parse_url($filename)["path"];
-        if (isset($parsed_filename_url)) {
-            $filename = $parsed_filename_url;
+        $parsedfilenameurl = parse_url($filename)["path"];
+        if (isset($parsedfilenameurl)) {
+            $filename = $parsedfilenameurl;
         }
 
         $file = $fs->get_file($contextid, 'question', $type, $oldid, '/', $filename);
@@ -600,7 +626,16 @@ function copy_files($fs, $contextid, $oldid, $newid, $text, $type, $component, $
     }
 }
 
-// Testing files
+/**
+ * Check if files are actually existent
+ * @param object $fs
+ * @param int $contextid
+ * @param int $oldid
+ * @param string $text
+ * @param string $type
+ * @param string $olcdomponent
+ * @return array
+ */
 function test_files($fs, $contextid, $oldid, $text, $type, $olcdomponent) {
 
     $success = 1;
@@ -609,9 +644,9 @@ function test_files($fs, $contextid, $oldid, $text, $type, $olcdomponent) {
     $filenames = get_image_filenames($text);
     foreach ($filenames as $filename) {
 
-        $parsed_filename_url = parse_url($filename)["path"];
-        if (isset($parsed_filename_url)) {
-            $filename = $parsed_filename_url;
+        $parsedfilenameurl = parse_url($filename)["path"];
+        if (isset($parsedfilenameurl)) {
+            $filename = $parsedfilenameurl;
         }
 
         $file = $fs->get_file($contextid, $olcdomponent, $type, $oldid, '/', $filename);
