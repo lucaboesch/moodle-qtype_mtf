@@ -123,7 +123,6 @@ Feature: Step 1
       | id_option_0 | 1st optiontext |
     And I press "id_submitbutton"
     Then "#id_name.is-invalid" "css_element" should exist
-    Then "#id_option_1editable.is-invalid" "css_element" should not exist
 
   # Enter question title and check if options are required
     When I set the following fields to these values:
@@ -133,12 +132,43 @@ Feature: Step 1
     Then "#id_name.is-invalid" "css_element" should not exist
     And I should see "This type of question requires at least 1 option"
 
-  # Enter everything correctly and check if question can be created as usual
+  # Check if defaultmark is required
     When I set the following fields to these values:
-      | id_name     | MTF Question   |
-      | id_option_0 | 1st optiontext |
+      | id_option_0    | 1st optiontext |
+      | id_defaultmark |                |
     And I press "id_submitbutton"
-    Then I should see "MTF Question"
+    And "#id_defaultmark.is-invalid" "css_element" should exist
+
+  # Check if judgment options are required
+    When I set the following fields to these values:
+      | id_defaultmark    | 1 |
+      | id_responsetext_1 |   |
+    And I press "id_submitbutton"
+    Then "#id_defaultmark.is-invalid" "css_element" should not exist
+    And "#id_responsetext_1.is-invalid" "css_element" should exist
+    And "#id_responsetext_2.is-invalid" "css_element" should not exist
+    When I set the following fields to these values:
+      | id_responsetext_1 | True |
+      | id_responsetext_2 |      |
+    And I press "id_submitbutton"
+    And "#id_responsetext_1.is-invalid" "css_element" should not exist
+    And "#id_responsetext_2.is-invalid" "css_element" should exist
+    When I set the following fields to these values:
+      | id_responsetext_1 | |
+      | id_responsetext_2 | |
+    And I press "id_submitbutton"
+    And "#id_responsetext_1.is-invalid" "css_element" should exist
+    And "#id_responsetext_2.is-invalid" "css_element" should exist
+
+  # Enter everything correctly
+    When I set the following fields to these values:
+      | id_responsetext_1 | True  |
+      | id_responsetext_2 | False |
+    And I press "id_submitbutton"
+    Then I should see "Question bank"
+    And I should see "MTF Question"
+    And "#id_responsetext_1.is-invalid" "css_element" should not exist
+    And "#id_responsetext_2.is-invalid" "css_element" should not exist
 
   @javascript
   Scenario: Testcase 1
@@ -220,12 +250,14 @@ Feature: Step 1
       | id_weightbutton_1_1      | checked                   |
       | id_weightbutton_2_2      | checked                   |
       | id_weightbutton_3_2      | checked                   |
-    Then I should see "MTF Question"
+    Then I should see "Question bank"
+    And I should see "MTF Question"
 
   # Duplicate the question
     When I choose "Duplicate" action for "MTF Question" in the question bank
     And I press "id_submitbutton"
     Then I should see "MTF Question"
+    And I should see "MTF Question (copy)"
 
   # Move the question to another category
     When I click on "MTF Question" "checkbox" in the "MTF Question" "table_row"
@@ -253,7 +285,8 @@ Feature: Step 1
       | id_option_0              | 1st optiontext            |
       | id_feedback_0            | 1st feedbacktext          |
       | id_weightbutton_0_1      | checked                   |
-    Then I should see "MTF Question"
+    Then I should see "Question bank"
+    And I should see "MTF Question"
 
   # Open the saved question and check if everything has been saved.
   # Empty option rows should not be saved.
