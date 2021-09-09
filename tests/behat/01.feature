@@ -73,18 +73,59 @@ Feature: Step 1
       | id_weightbutton_2_2      | checked                   |
       | id_weightbutton_3_2      | checked                   |
     And I click on "Blanks for 3 more choices" "button"
+    And I wait "5" seconds
     And I set the following fields to these values:
       | id_option_4              | 5th optiontext            |
       | id_feedback_4            | 5th feedbacktext          |
       | id_option_5              | 6th optiontext            |
       | id_feedback_5            | 6th feedbacktext          |
+      | id_option_6              | 7th optiontext            |
+      | id_feedback_6            | 7th feedbacktext          |
       | id_weightbutton_4_1      | checked                   |
       | id_weightbutton_5_1      | checked                   |
+      | id_weightbutton_6_1      | checked                   |
+    And I click on "Blanks for 3 more choices" "button"
+    And I wait "5" seconds
+    And I set the following fields to these values:
+      | id_option_7              | 8th optiontext            |
+      | id_feedback_7            | 8th feedbacktext          |
+      | id_option_8              | 9th optiontext            |
+      | id_feedback_8            | 9th feedbacktext          |
+      | id_option_9              | 10th optiontext           |
+      | id_feedback_9            | 10th feedbacktext         |
+      | id_weightbutton_7_1      | checked                   |
+      | id_weightbutton_8_1      | checked                   |
+      | id_weightbutton_9_1      | checked                   |
+    And I click on "Blanks for 3 more choices" "button"
+    And I wait "5" seconds
+    And I set the following fields to these values:
+      | id_option_10             | 11th optiontext           |
+      | id_feedback_10           | 11th feedbacktext         |
+      | id_option_11             | 12th optiontext           |
+      | id_feedback_11           | 12th feedbacktext         |
+      | id_option_12             | 13th optiontext           |
+      | id_feedback_12           | 13th feedbacktext         |
+      | id_weightbutton_10_1     | checked                   |
+      | id_weightbutton_11_1     | checked                   |
+      | id_weightbutton_12_1     | checked                   |
+    And I click on "Blanks for 3 more choices" "button"
+    And I wait "5" seconds
+    And I set the following fields to these values:
+      | id_option_13             | 14th optiontext           |
+      | id_feedback_13           | 14th feedbacktext         |
+      | id_option_14             | 15th optiontext           |
+      | id_feedback_14           | 15th feedbacktext         |
+      | id_option_15             | 16th optiontext           |
+      | id_feedback_15           | 16th feedbacktext         |
+      | id_weightbutton_13_1     | checked                   |
+      | id_weightbutton_14_1     | checked                   |
+      | id_weightbutton_15_1     | checked                   |
     And I press "id_submitbutton"
     Then I should see "MTF Question"
 
   # Open the saved question and check if everything has been saved
     When I choose "Edit question" action for "MTF Question" in the question bank
+    And I wait "5" seconds
     Then the following fields match these values:
       | id_name                  | MTF Question              |
       | id_questiontext          | This is a questiontext.   |
@@ -101,12 +142,100 @@ Feature: Step 1
       | id_feedback_4            | 5th feedbacktext          |
       | id_option_5              | 6th optiontext            |
       | id_feedback_5            | 6th feedbacktext          |
+      | id_option_6              | 7th optiontext            |
+      | id_feedback_6            | 7th feedbacktext          |
+      | id_option_7              | 8th optiontext            |
+      | id_feedback_7            | 8th feedbacktext          |
+      | id_option_8              | 9th optiontext            |
+      | id_feedback_8            | 9th feedbacktext          |
+      | id_option_9              | 10th optiontext           |
+      | id_feedback_9            | 10th feedbacktext         |
+      | id_option_10             | 11th optiontext           |
+      | id_feedback_10           | 11th feedbacktext         |
+      | id_option_11             | 12th optiontext           |
+      | id_feedback_11           | 12th feedbacktext         |
+      | id_option_12             | 13th optiontext           |
+      | id_feedback_12           | 13th feedbacktext         |
+      | id_option_13             | 14th optiontext           |
+      | id_feedback_13           | 14th feedbacktext         |
+      | id_option_14             | 15th optiontext           |
+      | id_feedback_14           | 15th feedbacktext         |
+      | id_option_15             | 16th optiontext           |
+      | id_feedback_15           | 16th feedbacktext         |
       | id_weightbutton_0_1      | checked                   |
       | id_weightbutton_1_1      | checked                   |
       | id_weightbutton_2_2      | checked                   |
       | id_weightbutton_3_2      | checked                   |
       | id_weightbutton_4_1      | checked                   |
       | id_weightbutton_5_1      | checked                   |
+      | id_weightbutton_6_1      | checked                   |
+      | id_weightbutton_7_1      | checked                   |
+      | id_weightbutton_8_1      | checked                   |
+      | id_weightbutton_9_1      | checked                   |
+      | id_weightbutton_10_1     | checked                   |
+      | id_weightbutton_11_1     | checked                   |
+      | id_weightbutton_12_1     | checked                   |
+      | id_weightbutton_13_1     | checked                   |
+      | id_weightbutton_14_1     | checked                   |
+      | id_weightbutton_15_1     | checked                   |
+
+  # Delete some options
+    When I set the following fields to these values:
+      | id_option_13             | |
+      | id_feedback_13           | |
+      | id_option_14             | |
+      | id_feedback_14           | |
+      | id_option_15             | |
+      | id_feedback_15           | |
+    And I press "id_updatebutton"
+    And I wait "5" seconds
+    Then I should see "Option 1"
+    And I should see "Option 2"
+    And I should see "Option 3"
+    And I should see "Option 4"
+    And I should see "Option 5"
+    And I should see "Option 6"
+    And I should see "Option 7"
+    And I should see "Option 8"
+    And I should see "Option 9"
+    And I should see "Option 10"
+    And I should see "Option 11"
+    And I should see "Option 12"
+    And I should see "Option 13"
+    And I should not see "Option 14"
+    And I should not see "14th optiontext"
+    And I should not see "14th feedbacktext"
+    And I should not see "Option 15"
+    And I should not see "15th optiontext"
+    And I should not see "15th feedbacktext"
+    And I should not see "Option 16"
+    And I should not see "16th optiontext"
+    And I should not see "16th feedbacktext"
+
+  # Change some options
+    When I set the following fields to these values:
+      | id_option_10             | 11th optiontext edit      |
+      | id_feedback_10           | 11th feedbacktext edit    |
+      | id_option_11             | 12th optiontext edit      |
+      | id_feedback_11           | 12th feedbacktext edit    |
+      | id_option_12             | 13th optiontext edit      |
+      | id_feedback_12           | 13th feedbacktext edit    |
+      | id_weightbutton_10_2     | checked                   |
+      | id_weightbutton_11_2     | checked                   |
+      | id_weightbutton_12_2     | checked                   |
+
+    And I press "id_updatebutton"
+    And I wait "5" seconds
+    Then the following fields match these values:
+      | id_option_10             | 11th optiontext edit      |
+      | id_feedback_10           | 11th feedbacktext edit    |
+      | id_option_11             | 12th optiontext edit      |
+      | id_feedback_11           | 12th feedbacktext edit    |
+      | id_option_12             | 13th optiontext edit      |
+      | id_feedback_12           | 13th feedbacktext edit    |
+      | id_weightbutton_10_2     | checked                   |
+      | id_weightbutton_11_2     | checked                   |
+      | id_weightbutton_12_2     | checked                   |
 
   @javascript
   Scenario: Testcase 8
@@ -253,11 +382,31 @@ Feature: Step 1
     Then I should see "Question bank"
     And I should see "MTF Question"
 
+  # Include hints in question which will be duplicated
+    When I choose "Edit question" action for "MTF Question" in the question bank
+    And I click on "Multiple tries" "link"
+    And I set the following fields to these values:
+      | id_hint_0 | 1th hinttext |
+      | id_hint_1 | 2nd hinttext |
+    And I press "submitbutton"
+    Then I should see "Question bank"
+    And I should see "MTF Question"
+
   # Duplicate the question
     When I choose "Duplicate" action for "MTF Question" in the question bank
     And I press "id_submitbutton"
     Then I should see "MTF Question"
     And I should see "MTF Question (copy)"
+
+  # Check if hints have been copied to the duplicated question
+    When I choose "Edit question" action for "MTF Question (copy)" in the question bank
+    And I click on "Multiple tries" "link"
+    Then the following fields match these values:
+      | id_hint_0 | 1th hinttext |
+      | id_hint_1 | 2nd hinttext |
+    And I press "submitbutton"
+    Then I should see "Question bank"
+    And I should see "MTF Question"
 
   # Move the question to another category
     When I click on "MTF Question" "checkbox" in the "MTF Question" "table_row"
