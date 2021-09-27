@@ -31,7 +31,7 @@ Feature: Step 4
       | MTF-Question-4 | 3    |
 
   @javascript
-  Scenario: Testcase 18
+  Scenario: Testcase 18, 19
 
   # See if the Review is shown if enabled
 
@@ -57,7 +57,7 @@ Feature: Step 4
     When I click on "quiznavbutton2" "link"
     Then "#quiznavbutton1[title='Not yet answered']" "css_element" should exist
 
-  # Not all options selected
+  # Some options selected
     When I click on ".qtype_mtf_row:contains('option text 1') input[value=1]" "css_element"
     And I click on ".qtype_mtf_row:contains('option text 2') input[value=1]" "css_element"
     And I click on ".qtype_mtf_row:contains('option text 3') input[value=1]" "css_element"
@@ -76,3 +76,10 @@ Feature: Step 4
     And I click on ".qtype_mtf_row:contains('option text 8') input[value=2]" "css_element"
     And I click on "quiznavbutton1" "link"
     Then "#quiznavbutton3[title='Answer saved']" "css_element" should exist
+
+  #Check if the completion state of each question is displayed on the summary page
+    When I click on "Finish attempt ..." "link" in the "Quiz navigation" "block"
+    Then "//tr[starts-with(@class,'quizsummary1')]//td[contains(.,'Not yet answered')]" "xpath_element" should exist
+    And "//tr[starts-with(@class,'quizsummary2')]//td[contains(.,'Incomplete answer')]" "xpath_element" should exist
+    And "//tr[starts-with(@class,'quizsummary3')]//td[contains(.,'Answer saved')]" "xpath_element" should exist
+    And I log out

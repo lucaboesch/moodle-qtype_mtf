@@ -73,8 +73,41 @@ Feature: Step 6
     And I should see "feedback to option 4"
     And I should see "feedback to option 5"
     And I should see "feedback to option 6"
+    And I should see "feedback to option 7"
     And I should see "feedback to option 8"
-    And I should see "feedback to option 1"
+    And I should see "option text 1: True"
+    And I should see "option text 2: True"
+    And I should see "option text 3: True"
+    And I should see "option text 4: True"
+    And I should see "option text 5: False"
+    And I should see "option text 6: False"
+    And I should see "option text 7: False"
+    And I should see "option text 8: False"
+    And I log out
+
+  @javascript
+  Scenario: Testcase 11, 19
+  # Check feedback
+  # Solving quiz as student1: 50% correct options (SUBPOINTS are activated). Some options are not answered at all.
+    When I log in as "student1"
+    And I am on "Course 1" course homepage
+    And I follow "Quiz 1"
+    And I press "Attempt quiz now"
+    And I click on ".qtype_mtf_row:contains('option text 1') input[value=1]" "css_element"
+    And I click on ".qtype_mtf_row:contains('option text 2') input[value=1]" "css_element"
+    And I click on ".qtype_mtf_row:contains('option text 3') input[value=1]" "css_element"
+    And I click on ".qtype_mtf_row:contains('option text 4') input[value=1]" "css_element"
+    And I press "Finish attempt ..."
+    And I press "Submit all and finish"
+    And I click on "Submit all and finish" "button" in the "Confirmation" "dialogue"
+    Then I should see "feedback to option 1"
+    And I should see "feedback to option 2"
+    And I should see "feedback to option 3"
+    And I should see "feedback to option 4"
+    And I should not see "feedback to option 5"
+    And I should not see "feedback to option 6"
+    And I should not see "feedback to option 7"
+    And I should not see "feedback to option 8"
     And I should see "option text 1: True"
     And I should see "option text 2: True"
     And I should see "option text 3: True"
@@ -114,12 +147,13 @@ Feature: Step 6
     And I log out
 
   @javascript
-  Scenario: Testcase 10, 11
+  Scenario: Testcase 10, 11, 19
   # Check grade: Verify that all possible mappings from
   # responses (correct, partially correct, incorrect) to
   # points function as specified for the different scoring
   # methods
   # The correct number of points is awarded, as specified
+  # Also check the correctness icons on the result page
 
   # Set Scoring Method to subpoints
     Given I log in as "teacher1"
@@ -148,6 +182,14 @@ Feature: Step 6
     And I press "Finish attempt ..."
     And I press "Submit all and finish"
     And I click on "Submit all and finish" "button" in the "Confirmation" "dialogue"
+    Then "//div[starts-with(@id,'question') and substring(@id, string-length(@id)-1)='-1']//tr[contains(.,'option text 1')]//td[contains(@class, 'mtfcorrectness')]//i[@title='Correct']" "xpath_element" should exist
+    And "//div[starts-with(@id,'question') and substring(@id, string-length(@id)-1)='-1']//tr[contains(.,'option text 2')]//td[contains(@class, 'mtfcorrectness')]//i[@title='Correct']" "xpath_element" should exist
+    And "//div[starts-with(@id,'question') and substring(@id, string-length(@id)-1)='-1']//tr[contains(.,'option text 3')]//td[contains(@class, 'mtfcorrectness')]//i[@title='Correct']" "xpath_element" should exist
+    And "//div[starts-with(@id,'question') and substring(@id, string-length(@id)-1)='-1']//tr[contains(.,'option text 4')]//td[contains(@class, 'mtfcorrectness')]//i[@title='Correct']" "xpath_element" should exist
+    And "//div[starts-with(@id,'question') and substring(@id, string-length(@id)-1)='-1']//tr[contains(.,'option text 5')]//td[contains(@class, 'mtfcorrectness')]//i[@title='Correct']" "xpath_element" should exist
+    And "//div[starts-with(@id,'question') and substring(@id, string-length(@id)-1)='-1']//tr[contains(.,'option text 6')]//td[contains(@class, 'mtfcorrectness')]//i[@title='Correct']" "xpath_element" should exist
+    And "//div[starts-with(@id,'question') and substring(@id, string-length(@id)-1)='-1']//tr[contains(.,'option text 7')]//td[contains(@class, 'mtfcorrectness')]//i[@title='Correct']" "xpath_element" should exist
+    And "//div[starts-with(@id,'question') and substring(@id, string-length(@id)-1)='-1']//tr[contains(.,'option text 8')]//td[contains(@class, 'mtfcorrectness')]//i[@title='Correct']" "xpath_element" should exist
     And I log out
 
   # Solving quiz as student2: 50% correct options (SUBPOINTS are activated)
@@ -166,6 +208,14 @@ Feature: Step 6
     And I press "Finish attempt ..."
     And I press "Submit all and finish"
     And I click on "Submit all and finish" "button" in the "Confirmation" "dialogue"
+    Then "//div[starts-with(@id,'question') and substring(@id, string-length(@id)-1)='-1']//tr[contains(.,'option text 1')]//td[contains(@class, 'mtfcorrectness')]//i[@title='Correct']" "xpath_element" should exist
+    And "//div[starts-with(@id,'question') and substring(@id, string-length(@id)-1)='-1']//tr[contains(.,'option text 2')]//td[contains(@class, 'mtfcorrectness')]//i[@title='Correct']" "xpath_element" should exist
+    And "//div[starts-with(@id,'question') and substring(@id, string-length(@id)-1)='-1']//tr[contains(.,'option text 3')]//td[contains(@class, 'mtfcorrectness')]//i[@title='Correct']" "xpath_element" should exist
+    And "//div[starts-with(@id,'question') and substring(@id, string-length(@id)-1)='-1']//tr[contains(.,'option text 4')]//td[contains(@class, 'mtfcorrectness')]//i[@title='Correct']" "xpath_element" should exist
+    And "//div[starts-with(@id,'question') and substring(@id, string-length(@id)-1)='-1']//tr[contains(.,'option text 5')]//td[contains(@class, 'mtfcorrectness')]//i[@title='Incorrect']" "xpath_element" should exist
+    And "//div[starts-with(@id,'question') and substring(@id, string-length(@id)-1)='-1']//tr[contains(.,'option text 6')]//td[contains(@class, 'mtfcorrectness')]//i[@title='Incorrect']" "xpath_element" should exist
+    And "//div[starts-with(@id,'question') and substring(@id, string-length(@id)-1)='-1']//tr[contains(.,'option text 7')]//td[contains(@class, 'mtfcorrectness')]//i[@title='Incorrect']" "xpath_element" should exist
+    And "//div[starts-with(@id,'question') and substring(@id, string-length(@id)-1)='-1']//tr[contains(.,'option text 8')]//td[contains(@class, 'mtfcorrectness')]//i[@title='Incorrect']" "xpath_element" should exist
     And I log out
 
   # Solving quiz as student3: 0% correct options (SUBPOINTS are activated)
@@ -184,6 +234,14 @@ Feature: Step 6
     And I press "Finish attempt ..."
     And I press "Submit all and finish"
     And I click on "Submit all and finish" "button" in the "Confirmation" "dialogue"
+    Then "//div[starts-with(@id,'question') and substring(@id, string-length(@id)-1)='-1']//tr[contains(.,'option text 1')]//td[contains(@class, 'mtfcorrectness')]//i[@title='Incorrect']" "xpath_element" should exist
+    And "//div[starts-with(@id,'question') and substring(@id, string-length(@id)-1)='-1']//tr[contains(.,'option text 2')]//td[contains(@class, 'mtfcorrectness')]//i[@title='Incorrect']" "xpath_element" should exist
+    And "//div[starts-with(@id,'question') and substring(@id, string-length(@id)-1)='-1']//tr[contains(.,'option text 3')]//td[contains(@class, 'mtfcorrectness')]//i[@title='Incorrect']" "xpath_element" should exist
+    And "//div[starts-with(@id,'question') and substring(@id, string-length(@id)-1)='-1']//tr[contains(.,'option text 4')]//td[contains(@class, 'mtfcorrectness')]//i[@title='Incorrect']" "xpath_element" should exist
+    And "//div[starts-with(@id,'question') and substring(@id, string-length(@id)-1)='-1']//tr[contains(.,'option text 5')]//td[contains(@class, 'mtfcorrectness')]//i[@title='Incorrect']" "xpath_element" should exist
+    And "//div[starts-with(@id,'question') and substring(@id, string-length(@id)-1)='-1']//tr[contains(.,'option text 6')]//td[contains(@class, 'mtfcorrectness')]//i[@title='Incorrect']" "xpath_element" should exist
+    And "//div[starts-with(@id,'question') and substring(@id, string-length(@id)-1)='-1']//tr[contains(.,'option text 7')]//td[contains(@class, 'mtfcorrectness')]//i[@title='Incorrect']" "xpath_element" should exist
+    And "//div[starts-with(@id,'question') and substring(@id, string-length(@id)-1)='-1']//tr[contains(.,'option text 8')]//td[contains(@class, 'mtfcorrectness')]//i[@title='Incorrect']" "xpath_element" should exist
     And I log out
 
   # Check results for Subpoints
@@ -255,6 +313,14 @@ Feature: Step 6
     And I press "Finish attempt ..."
     And I press "Submit all and finish"
     And I click on "Submit all and finish" "button" in the "Confirmation" "dialogue"
+    Then "//div[starts-with(@id,'question') and substring(@id, string-length(@id)-1)='-1']//tr[contains(.,'option text 1')]//td[contains(@class, 'mtfcorrectness')]//i[@title='Correct']" "xpath_element" should exist
+    And "//div[starts-with(@id,'question') and substring(@id, string-length(@id)-1)='-1']//tr[contains(.,'option text 2')]//td[contains(@class, 'mtfcorrectness')]//i[@title='Correct']" "xpath_element" should exist
+    And "//div[starts-with(@id,'question') and substring(@id, string-length(@id)-1)='-1']//tr[contains(.,'option text 3')]//td[contains(@class, 'mtfcorrectness')]//i[@title='Correct']" "xpath_element" should exist
+    And "//div[starts-with(@id,'question') and substring(@id, string-length(@id)-1)='-1']//tr[contains(.,'option text 4')]//td[contains(@class, 'mtfcorrectness')]//i[@title='Correct']" "xpath_element" should exist
+    And "//div[starts-with(@id,'question') and substring(@id, string-length(@id)-1)='-1']//tr[contains(.,'option text 5')]//td[contains(@class, 'mtfcorrectness')]//i[@title='Correct']" "xpath_element" should exist
+    And "//div[starts-with(@id,'question') and substring(@id, string-length(@id)-1)='-1']//tr[contains(.,'option text 6')]//td[contains(@class, 'mtfcorrectness')]//i[@title='Correct']" "xpath_element" should exist
+    And "//div[starts-with(@id,'question') and substring(@id, string-length(@id)-1)='-1']//tr[contains(.,'option text 7')]//td[contains(@class, 'mtfcorrectness')]//i[@title='Correct']" "xpath_element" should exist
+    And "//div[starts-with(@id,'question') and substring(@id, string-length(@id)-1)='-1']//tr[contains(.,'option text 8')]//td[contains(@class, 'mtfcorrectness')]//i[@title='Correct']" "xpath_element" should exist
     And I log out
 
   # Solving quiz as student5: 0% correct options (MTF1/0 is activated)
@@ -273,9 +339,17 @@ Feature: Step 6
     And I press "Finish attempt ..."
     And I press "Submit all and finish"
     And I click on "Submit all and finish" "button" in the "Confirmation" "dialogue"
+    Then "//div[starts-with(@id,'question') and substring(@id, string-length(@id)-1)='-1']//tr[contains(.,'option text 1')]//td[contains(@class, 'mtfcorrectness')]//i[@title='Correct']" "xpath_element" should exist
+    And "//div[starts-with(@id,'question') and substring(@id, string-length(@id)-1)='-1']//tr[contains(.,'option text 2')]//td[contains(@class, 'mtfcorrectness')]//i[@title='Correct']" "xpath_element" should exist
+    And "//div[starts-with(@id,'question') and substring(@id, string-length(@id)-1)='-1']//tr[contains(.,'option text 3')]//td[contains(@class, 'mtfcorrectness')]//i[@title='Correct']" "xpath_element" should exist
+    And "//div[starts-with(@id,'question') and substring(@id, string-length(@id)-1)='-1']//tr[contains(.,'option text 4')]//td[contains(@class, 'mtfcorrectness')]//i[@title='Correct']" "xpath_element" should exist
+    And "//div[starts-with(@id,'question') and substring(@id, string-length(@id)-1)='-1']//tr[contains(.,'option text 5')]//td[contains(@class, 'mtfcorrectness')]//i[@title='Incorrect']" "xpath_element" should exist
+    And "//div[starts-with(@id,'question') and substring(@id, string-length(@id)-1)='-1']//tr[contains(.,'option text 6')]//td[contains(@class, 'mtfcorrectness')]//i[@title='Incorrect']" "xpath_element" should exist
+    And "//div[starts-with(@id,'question') and substring(@id, string-length(@id)-1)='-1']//tr[contains(.,'option text 7')]//td[contains(@class, 'mtfcorrectness')]//i[@title='Incorrect']" "xpath_element" should exist
+    And "//div[starts-with(@id,'question') and substring(@id, string-length(@id)-1)='-1']//tr[contains(.,'option text 8')]//td[contains(@class, 'mtfcorrectness')]//i[@title='Incorrect']" "xpath_element" should exist
     And I log out
 
-  # Check results for MC1/0
+  # Check results for MTF1/0
     When I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I follow "Quiz 1"
