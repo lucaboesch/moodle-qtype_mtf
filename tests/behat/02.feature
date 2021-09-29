@@ -31,7 +31,7 @@ Feature: Step 2
     And I log out
 
   @javascript @_file_upload
-  Scenario: Testcase 9
+  Scenario: Testcase 25
 
   # Import question
 

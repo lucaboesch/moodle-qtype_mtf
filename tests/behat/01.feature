@@ -18,6 +18,41 @@ Feature: Step 1
     And I log in as "admin"
 
   @javascript
+  Scenario: Testcase 34
+
+  # Check if the shuffleanswers option is checked per default and
+  # check if it is set in the plugin administration it also should be checked in newly created questions
+    When I navigate to "Plugins > Question types > Multiple True False (ETH)" in site administration
+    And I should see "Default values for Multiple True/False questions."
+    And the following fields match these values:
+      | id_s_qtype_mtf_shuffleanswers | checked |
+    And I am on "Course 1" course homepage
+    And I navigate to "Question bank" in current page administration
+    And I press "Create a new question ..."
+    And I set the field "item_qtype_mtf" to "1"
+    And I press "submitbutton"
+    Then I should see "Adding a Multiple True/False question"
+    And the following fields match these values:
+      | id_shuffleanswers | checked |
+
+  # Check if the shuffleanswers option is NOT checked in the plugin administration
+  # it also should NOT be checked in newly created questions
+    When I navigate to "Plugins > Question types > Multiple True False (ETH)" in site administration
+    And I should see "Default values for Multiple True/False questions."
+    And I set the following fields to these values:
+      | id_s_qtype_mtf_shuffleanswers | |
+    And I press "Save changes"
+    And I am on "Course 1" course homepage
+    And I navigate to "Question bank" in current page administration
+    And I press "Create a new question ..."
+    And I set the field "item_qtype_mtf" to "1"
+    And I press "submitbutton"
+    Then I should see "Adding a Multiple True/False question"
+    And the following fields match these values:
+      | id_shuffleanswers | |
+    And I log out
+
+  @javascript
   Scenario: Testcase 1,3,4
 
   # Create question and check if all values are on default state
