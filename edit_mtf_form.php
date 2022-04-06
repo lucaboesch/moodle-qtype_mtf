@@ -53,19 +53,18 @@ class qtype_mtf_edit_form extends question_edit_form {
 
     /**
      * Build the form definition.
+     *
      * This adds all the form fields that the default question type supports.
      * If your question type does not support all these fields, then you can
      * override this method and remove the ones you don't want with $mform->removeElement().
      */
     protected function definition() {
-        global $COURSE, $CFG, $DB;
-
-        $qtype = $this->qtype();
-        $langfile = "qtype_$qtype";
+        global $DB, $PAGE;
 
         $mform = $this->_form;
 
-        $mform->addElement('header', 'categoryheader', get_string('category', 'question'));
+        // Standard fields at the start of the form.
+        $mform->addElement('header', 'generalheader', get_string("general", 'form'));
 
         if (!isset($this->question->id)) {
             if (!empty($this->question->formoptions->mustbeusable)) {
@@ -76,132 +75,138 @@ class qtype_mtf_edit_form extends question_edit_form {
 
             // Adding question.
             $mform->addElement('questioncategory', 'category', get_string('category', 'question'),
-                    array('contexts' => $contexts));
-        } else if (!($this->question->formoptions->canmove || $this->question->formoptions->cansaveasnew)) {
+                            array('contexts' => $contexts));
+        } else if (!($this->question->formoptions->canmove ||
+                        $this->question->formoptions->cansaveasnew)) {
+                            // Editing question with no permission to move from category.
+                            $mform->addElement('questioncategory', 'category', get_string('category', 'question'),
+                                            array('contexts' => array($this->categorycontext)));
+                            $mform->addElement('hidden', 'usecurrentcat', 1);
+                            $mform->setType('usecurrentcat', PARAM_BOOL);
+                            $mform->setConstant('usecurrentcat', 1);
+                        } else {
+                            // Editing question with permission to move from category or save as new q.
+                            $currentgrp = array();
+                            $currentgrp[0] = $mform->createElement('questioncategory', 'category',
+                                            get_string('categorycurrent', 'question'),
+                                            array('contexts' => array($this->categorycontext)));
+                            // Validate if the question is being duplicated.
+                            $beingcopied = false;
+                            if (isset($this->question->beingcopied)) {
+                                $beingcopied = $this->question->beingcopied;
+                            }
+                            if (($this->question->formoptions->canedit ||
+                                            $this->question->formoptions->cansaveasnew) && ($beingcopied)) {
+                                                // Not move only form.
+                                                $currentgrp[1] = $mform->createElement('checkbox', 'usecurrentcat', '',
+                                                                get_string('categorycurrentuse', 'question'));
+                                                $mform->setDefault('usecurrentcat', 1);
+                                            }
+                                            $currentgrp[0]->freeze();
+                                            $currentgrp[0]->setPersistantFreeze(false);
+                                            $mform->addGroup($currentgrp, 'currentgrp',
+                                                            get_string('categorycurrent', 'question'), null, false);
 
-            // Editing question with no permission to move from category.
-            $mform->addElement('questioncategory', 'category', get_string('category', 'question'),
-                    array('contexts' => array($this->categorycontext)));
-            $mform->addElement('hidden', 'usecurrentcat', 1);
-            $mform->setType('usecurrentcat', PARAM_BOOL);
-            $mform->setConstant('usecurrentcat', 1);
-        } else if (isset($this->question->formoptions->movecontext)) {
+                                            if (($beingcopied)) {
+                                                $mform->addElement('questioncategory', 'categorymoveto',
+                                                                get_string('categorymoveto', 'question'),
+                                                                array('contexts' => array($this->categorycontext)));
+                                                if ($this->question->formoptions->canedit ||
+                                                                $this->question->formoptions->cansaveasnew) {
+                                                                    // Not move only form.
+                                                                    $mform->disabledIf('categorymoveto', 'usecurrentcat', 'checked');
+                                                                }
+                                            }
+                        }
 
-            // Moving question to another context.
-            $mform->addElement('questioncategory', 'categorymoveto', get_string('category', 'question'),
-                    array('contexts' => $this->contexts->having_cap('moodle/question:add')));
-            $mform->addElement('hidden', 'usecurrentcat', 1);
-            $mform->setType('usecurrentcat', PARAM_BOOL);
-            $mform->setConstant('usecurrentcat', 1);
-        } else {
+                        if (!empty($this->question->id) && !$this->question->beingcopied) {
+                            // Add extra information from plugins when editing a question (e.g.: Authors, version control and usage).
+                            $functionname = 'edit_form_display';
+                            $questiondata = [];
+                            $plugins = get_plugin_list_with_function('qbank', $functionname);
+                            foreach ($plugins as $componentname => $plugin) {
+                                $element = new StdClass();
+                                $element->pluginhtml = component_callback($componentname, $functionname, [$this->question]);
+                                $questiondata['editelements'][] = $element;
+                            }
+                            $mform->addElement('static', 'versioninfo', get_string('versioninfo', 'qbank_editquestion'),
+                                            $PAGE->get_renderer('qbank_editquestion')->render_question_info($questiondata));
+                        }
 
-            // Editing question with permission to move from category or save as new q.
-            $currentgrp = array();
-            $currentgrp[0] = $mform->createElement('questioncategory', 'category', get_string('categorycurrent', 'question'),
-                    array('contexts' => array($this->categorycontext)));
-            if ($this->question->formoptions->canedit || $this->question->formoptions->cansaveasnew) {
-                // Not move only form.
-                $currentgrp[1] = $mform->createElement('checkbox', 'usecurrentcat', '',
-                    get_string('categorycurrentuse', 'question'));
-                $mform->setDefault('usecurrentcat', 1);
-            }
-            $currentgrp[0]->freeze();
-            $currentgrp[0]->setPersistantFreeze(false);
-            $mform->addGroup($currentgrp, 'currentgrp', get_string('categorycurrent', 'question'), null, false);
+                        $mform->addElement('text', 'name', get_string('tasktitle', 'qtype_mtf'),
+                                        array('size' => 50, 'maxlength' => 255));
+                        $mform->setType('name', PARAM_TEXT);
+                        $mform->addRule('name', null, 'required', null, 'client');
 
-            $mform->addElement('questioncategory', 'categorymoveto', get_string('categorymoveto', 'question'),
-                    array('contexts' => array($this->categorycontext)));
-            if ($this->question->formoptions->canedit || $this->question->formoptions->cansaveasnew) {
-                // Not move only form.
-                $mform->disabledIf('categorymoveto', 'usecurrentcat', 'checked');
-            }
-        }
+                        $mform->addElement('float', 'defaultmark', get_string('maxpoints', 'qtype_mtf'),
+                                        array('size' => 7));
+                        $mform->setDefault('defaultmark', $this->get_default_value('defaultmark', 1));
+                        $mform->addRule('defaultmark', null, 'required', null, 'client');
 
-        $mform->addElement('header', 'generalheader', get_string('general', 'form'));
-        $mform->addElement('text', 'name', get_string('tasktitle', 'qtype_mtf'), array('size' => 50, 'maxlength' => 255));
-        $mform->setType('name', PARAM_TEXT);
-        $mform->addRule('name', null, 'required', null, 'client');
+                        $mform->addElement('editor', 'questiontext', get_string('stem', 'qtype_mtf'),
+                                        array('rows' => 15), $this->editoroptions);
+                        $mform->setType('questiontext', PARAM_RAW);
+                        $mform->addRule('questiontext', null, 'required', null, 'client');
+                        $mform->setDefault('questiontext', array('text' => get_string('enterstemhere', 'qtype_mtf')));
 
-        $mform->addElement('text', 'defaultmark', get_string('maxpoints', 'qtype_mtf'), array('size' => 7));
-        $mform->setType('defaultmark', PARAM_FLOAT);
-        $mform->setDefault('defaultmark', 1);
-        $mform->addRule('defaultmark', null, 'required', null, 'client');
+                        if(class_exists('qbank_editquestion\\editquestion_helper')){
+                            $mform->addElement('select', 'status', get_string('status', 'qbank_editquestion'),
+                                            \qbank_editquestion\editquestion_helper::get_question_status_list());
+                        }
+                        $mform->addElement('editor', 'generalfeedback', get_string('generalfeedback', 'question'),
+                                        array('rows' => 10), $this->editoroptions);
+                        $mform->setType('generalfeedback', PARAM_RAW);
+                        $mform->addHelpButton('generalfeedback', 'generalfeedback', 'question');
 
-        $mform->addElement('editor', 'questiontext', get_string('stem', 'qtype_mtf'), array('rows' => 15), $this->editoroptions);
-        $mform->setType('questiontext', PARAM_RAW);
-        $mform->addRule('questiontext', null, 'required', null, 'client');
-        $mform->setDefault('questiontext', array('text' => get_string('enterstemhere', 'qtype_mtf')));
+                        $mform->addElement('text', 'idnumber', get_string('idnumber', 'question'), 'maxlength="100"  size="10"');
+                        $mform->addHelpButton('idnumber', 'idnumber', 'question');
+                        $mform->setType('idnumber', PARAM_RAW);
 
-        $mform->addElement('editor', 'generalfeedback', get_string('generalfeedback', 'question'),
-                array('rows' => 10), $this->editoroptions);
-        $mform->setType('generalfeedback', PARAM_RAW);
-        $mform->addHelpButton('generalfeedback', 'generalfeedback', 'qtype_mtf');
-        $mform->addElement('select', 'answernumbering', get_string('answernumbering', 'qtype_mtf'),
-                qtype_mtf::get_numbering_styles());
+                        // Any questiontype specific fields.
+                        $this->definition_inner($mform);
 
-        if (!empty($this->question->options->answernumbering)) {
-            $mform->setDefault('answernumbering', array($this->question->options->answernumbering));
-        }
+                        if (core_tag_tag::is_enabled('core_question', 'question')
+                                        && class_exists('qbank_tagquestion\\tags_action_column')
+                                        && \core\plugininfo\qbank::is_plugin_enabled('qbank_tagquestion')) {
+                                            $this->add_tag_fields($mform);
+                                        }
 
-        $mform->addElement('text', 'idnumber', get_string('idnumber', 'question'), 'maxlength="100"  size="10"');
-        $mform->addHelpButton('idnumber', 'idnumber', 'question');
-        $mform->setType('idnumber', PARAM_RAW);
+                                        if (!empty($this->customfieldpluginenabled) && $this->customfieldpluginenabled) {
+                                            // Add custom fields to the form.
+                                            $this->customfieldhandler = qbank_customfields\customfield\question_handler::create();
+                                            $this->customfieldhandler->set_parent_context($this->categorycontext); // For question handler only.
+                                            $this->customfieldhandler->instance_form_definition($mform, empty($this->question->id) ? 0 : $this->question->id);
+                                        }
 
-        $this->definition_inner($mform);
+                                        $this->add_hidden_fields();
 
-        if (class_exists('core_tag_tag')) {
-            if (core_tag_tag::is_enabled('core_question', 'question')) {
-                $mform->addElement('header', 'tagshdr', get_string('tags', 'tag'));
-                $mform->addElement('tags', 'tags', get_string('tags'),
-                        array('itemtype' => 'question', 'component' => 'core_question'));
-            }
-        }
-        $this->add_interactive_settings(true, true);
+                                        $mform->addElement('hidden', 'qtype');
+                                        $mform->setType('qtype', PARAM_ALPHA);
 
-        if (!empty($this->question->id)) {
-            $mform->addElement('header', 'createdmodifiedheader',
-                    get_string('createdmodifiedheader', 'question'));
-            $a = new stdClass();
+                                        $mform->addElement('hidden', 'makecopy');
+                                        $mform->setType('makecopy', PARAM_INT);
 
-            if (!empty($this->question->createdby)) {
-                $a->time = userdate($this->question->timecreated);
-                $a->user = fullname($DB->get_record('user', array('id' => $this->question->createdby)));
-            } else {
-                $a->time = get_string('unknown', 'question');
-                $a->user = get_string('unknown', 'question');
-            }
-            $mform->addElement('static', 'created', get_string('created', 'question'), get_string('byandon', 'question', $a));
+                                        $buttonarray = array();
+                                        $buttonarray[] = $mform->createElement('submit', 'updatebutton',
+                                                        get_string('savechangesandcontinueediting', 'question'));
+                                        if ($this->can_preview()) {
+                                            if (\core\plugininfo\qbank::is_plugin_enabled('qbank_previewquestion')) {
+                                                $previewlink = $PAGE->get_renderer('qbank_previewquestion')->question_preview_link(
+                                                                $this->question->id, $this->context, true);
+                                                $buttonarray[] = $mform->createElement('static', 'previewlink', '', $previewlink);
+                                            }
+                                        }
 
-            if (!empty($this->question->modifiedby)) {
-                $a = new stdClass();
-                $a->time = userdate($this->question->timemodified);
-                $a->user = fullname($DB->get_record('user', array('id' => $this->question->modifiedby)));
-                $mform->addElement('static', 'modified', get_string('modified', 'question'),
-                        get_string('byandon', 'question', $a));
-            }
-        }
+                                        $mform->addGroup($buttonarray, 'updatebuttonar', '', array(' '), false);
+                                        $mform->closeHeaderBefore('updatebuttonar');
 
-        global $PAGE;
-        $buttonarray = array();
-        $buttonarray[] = $mform->createElement('submit', 'updatebutton', get_string('savechangesandcontinueediting', 'question'));
+                                        $this->add_action_buttons(true, get_string('savechanges'));
 
-        if ($this->can_preview()) {
-            $previewlink = $PAGE->get_renderer('core_question')->question_preview_link($this->question->id, $this->context, true);
-            $buttonarray[] = $mform->createElement('static', 'previewlink', '', $previewlink);
-        }
-
-        $mform->addGroup($buttonarray, 'updatebuttonar', '', array(' '), false);
-        $mform->closeHeaderBefore('updatebuttonar');
-
-        if ((!empty($this->question->id))
-        && (!($this->question->formoptions->canedit || $this->question->formoptions->cansaveasnew))) {
-            $mform->hardFreezeAllVisibleExcept(array('categorymoveto', 'buttonar', 'currentgrp'));
-        }
-
-        $this->add_hidden_fields();
-        $this->add_action_buttons();
+                                        if ((!empty($this->question->id)) && (!($this->question->formoptions->canedit ||
+                                                        $this->question->formoptions->cansaveasnew))) {
+                                                            $mform->hardFreezeAllVisibleExcept(array('categorymoveto', 'buttonar', 'currentgrp'));
+                                                        }
     }
-
     /**
      * Adds question-type specific form fields.
      * @param object $mform the form being built.
