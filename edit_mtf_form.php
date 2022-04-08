@@ -146,7 +146,13 @@ class qtype_mtf_edit_form extends question_edit_form {
                         $this->editoroptions);
         $mform->setType('generalfeedback', PARAM_RAW);
         $mform->addHelpButton('generalfeedback', 'generalfeedback', 'question');
-
+        $mform->addElement('select', 'answernumbering', get_string('answernumbering', 'qtype_mtf'),
+                        qtype_mtf::get_numbering_styles());
+        if (!empty($this->question->options->answernumbering)) {
+            $mform->setDefault('answernumbering',
+                            array($this->question->options->answernumbering
+                            ));
+        }
         $mform->addElement('text', 'idnumber', get_string('idnumber', 'question'), 'maxlength="100"  size="10"');
         $mform->addHelpButton('idnumber', 'idnumber', 'question');
         $mform->setType('idnumber', PARAM_RAW);
