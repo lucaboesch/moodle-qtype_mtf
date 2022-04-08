@@ -459,7 +459,6 @@ class qtype_mtf_edit_form extends question_edit_form {
             $question->columns = $question->options->columns;
             $question->numberofrows = $question->options->numberofrows;
             $question->numberofcolumns = $question->options->numberofcolumns;
-            $question->answernumbering = $question->options->answernumbering;
         }
 
         if (isset($this->question->id)) {
