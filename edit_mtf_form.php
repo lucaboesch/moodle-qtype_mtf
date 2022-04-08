@@ -149,9 +149,9 @@ class qtype_mtf_edit_form extends question_edit_form {
         $mform->addElement('select', 'answernumbering', get_string('answernumbering', 'qtype_mtf'),
                         qtype_mtf::get_numbering_styles());
         if (!empty($this->question->options->answernumbering)) {
-            $mform->setDefault('answernumbering',
-                            array($this->question->options->answernumbering
-                            ));
+            $mform->setDefault('answernumbering', array($this->question->options->answernumbering));
+        } else {
+            $mform->setDefault('answernumbering', 'answernumberingnone');
         }
         $mform->addElement('text', 'idnumber', get_string('idnumber', 'question'), 'maxlength="100"  size="10"');
         $mform->addHelpButton('idnumber', 'idnumber', 'question');
@@ -459,6 +459,7 @@ class qtype_mtf_edit_form extends question_edit_form {
             $question->columns = $question->options->columns;
             $question->numberofrows = $question->options->numberofrows;
             $question->numberofcolumns = $question->options->numberofcolumns;
+            $question->answernumbering = $question->options->answernumbering;
         }
 
         if (isset($this->question->id)) {
