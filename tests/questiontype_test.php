@@ -68,6 +68,7 @@ class qtype_mtf_test extends advanced_testcase {
         $qdata->idnumber = 5;
         $qdata->category = 1;
         $qdata->contextid = 1;
+        $qdata->status = \core_question\local\bank\question_version_status::QUESTION_STATUS_READY;
         $qdata->parent = 0;
         $qdata->createdby = 0;
         $qdata->modifiedby = 0;
