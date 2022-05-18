@@ -287,17 +287,12 @@ class qtype_mtf_edit_form extends question_edit_form {
         }
 
         $this->add_per_answer_fields($mform, get_string('optionno', 'qtype_mtf', '{no}'), 0, $this->numberofrows, 3);
-        $mform->addElement('hidden', 'qtype');
-        $mform->setType('qtype', PARAM_ALPHA);
 
         // Keep state of number of options to warn user if they go lower.
         $mform->addElement('hidden', 'qtype_mtf_lastnumberofcols');
         $mform->setType('qtype_mtf_lastnumberofcols', PARAM_INT);
         $mform->setDefault('qtype_mtf_lastnumberofcols', $this->numberofrows);
-        $mform->addElement('hidden', 'makecopy');
-        $mform->setType('makecopy', PARAM_ALPHA);
 
-        $this->add_hidden_fields();
     }
 
     /**
