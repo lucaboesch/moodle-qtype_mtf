@@ -99,26 +99,7 @@ class qtype_mtf_question extends question_graded_automatically_with_countback {
      */
     public function apply_attempt_state(question_attempt_step $step) {
         $this->order = explode(',', $step->get_qt_var('_order'));
-
-        // Add any missing answers. Sometimes people edit questions after they
-        // have been attempted which breaks things.
-        // Retrieve the question rows (mtf options).
-        for ($i = 0; $i < count($this->order); $i++) {
-            if (isset($this->rows[$this->order[$i]])) {
-                continue;
-            }
-
-            $a = new stdClass();
-            $a->id = 0;
-            $a->questionid = $this->id;
-            $a->number = -1;
-            $a->optiontext = html_writer::span(get_string('deletedchoice', 'qtype_mtf'), 'notifyproblem');
-            $a->optiontextformat = FORMAT_HTML;
-            $a->optionfeedback = "";
-            $a->optionfeedbackformat = FORMAT_HTML;
-            $this->rows[$this->order[$i]] = $a;
-            $this->editedquestion = 1;
-        }
+        parent::apply_attempt_state($step);
     }
 
     /**
