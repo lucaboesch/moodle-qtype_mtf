@@ -10,7 +10,7 @@ Feature: Step 1
       | Course 1 | C1        | 0        |
     And the following "course enrolments" exist:
       | user      | course | role           |
-      | teacher1  | c1     | editingteacher |
+      | teacher1  | C1     | editingteacher |
     And the following "question categories" exist:
       | contextlevel | reference | name           |
       | Course       | C1        | Test questions |
