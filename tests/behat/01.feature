@@ -23,6 +23,7 @@ Feature: Step 1
   @javascript @qtype_mtf_1_sc_34
   Scenario: Testcase 34
 
+    # esp 02
   # Check if the shuffle answers option is checked per default and
   # check if it is set in the plugin administration it also should be checked in newly created questions
     When I navigate to "Plugins > Question types > Multiple True False (ETH)" in site administration
