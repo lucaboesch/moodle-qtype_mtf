@@ -225,7 +225,7 @@ class qtype_mtf_question extends question_graded_automatically_with_countback {
      * @return bool whether this response can be graded.
      */
     public function is_gradable_response(array $response) {
-        if ($this->scoringmethod == 'subpoints') {
+        if ($this->scoringmethod == 'subpoints' || $this->scoringmethod == 'subpointdeduction') {
             if ($this->get_num_selected_choices($response) > 0) {
                 return true;
             } else {
