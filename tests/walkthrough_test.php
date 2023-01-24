@@ -184,9 +184,18 @@ class qtype_mtf_walkthrough_test extends qbehaviour_walkthrough_test_base {
         $mtf->deduction = 0.5;
         $mtf->scoringmethod = 'subpointdeduction';
         $this->start_attempt_at_question($mtf, 'immediatefeedback', 1);
-        $this->process_submission(array('option0' => 1, 'option1' => 1));
+        $this->process_submission(array('option0' => 1, 'option1' => '1'));
         $this->quba->finish_all_questions();
         $this->check_current_state(question_state::$gradedpartial);
+        # one right, one wrong should give +0.5 -0.25 = 0.25
         $this->check_current_mark(0.25);
+
+        $this->start_attempt_at_question($mtf, 'immediatefeedback', 1);
+        $this->process_submission(array('option0' => 1, 'option1' => ''));
+        $this->quba->finish_all_questions();
+        $this->check_current_state(question_state::$gradedpartial);
+        # one right, one empty should give +0.5 -0 = 0.5
+        $this->check_current_mark(0.5);
+
     }
 }
