@@ -219,13 +219,15 @@ class qtype_mtf_walkthrough_test extends qbehaviour_walkthrough_test_base {
         $this->check_current_mark(0.5);
 
         // Changing back to "subpoints with deduction" and changing answers to 2 and 1,
-        // so still one right and one wrong.
+        // so still one right and one wrong. With the deduction reduced to 0.1, we should
+        // get 0.5 - 0.1*0.5 = 0.45 points.
         $question = $this->quba->get_question($this->slot, false);
         $question->scoringmethod = 'subpointdeduction';
         $question->rows[5]->number = 2;
         $question->rows[6]->number = 1;
+        $question->deduction = 0.1;
         $this->quba->regrade_all_questions();
-        $this->check_current_mark(0.25);
+        $this->check_current_mark(0.45);
 
         // Finally, change answers to 1 and 1, so now both answers are correct,
         // we should get full marks.
