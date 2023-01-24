@@ -187,15 +187,53 @@ class qtype_mtf_walkthrough_test extends qbehaviour_walkthrough_test_base {
         $this->process_submission(array('option0' => 1, 'option1' => '1'));
         $this->quba->finish_all_questions();
         $this->check_current_state(question_state::$gradedpartial);
-        # one right, one wrong should give +0.5 -0.25 = 0.25
+        // One right, one wrong should give +0.5 -0.25 = 0.25.
         $this->check_current_mark(0.25);
 
         $this->start_attempt_at_question($mtf, 'immediatefeedback', 1);
         $this->process_submission(array('option0' => 1, 'option1' => ''));
         $this->quba->finish_all_questions();
         $this->check_current_state(question_state::$gradedpartial);
-        # one right, one empty should give +0.5 -0 = 0.5
+        // One right, one empty should give +0.5 -0 = 0.5.
+        $this->check_current_mark(0.5);
+    }
+
+    /**
+     * Test regrading of questions with deduction
+     */
+    public function test_deduction_mtf_regrading() {
+        $mtf = $this->make_a_mtf_question();
+        $mtf->deduction = 0.5;
+        $mtf->scoringmethod = 'subpointdeduction';
+        $this->start_attempt_at_question($mtf, 'immediatefeedback', 1);
+        // Correct answer would be 1 and 2, so we have one correct and one wrong.
+        $this->process_submission(array('option0' => 1, 'option1' => 1));
+        $this->quba->finish_all_questions();
+        $this->check_current_state(question_state::$gradedpartial);
+        $this->check_current_mark(0.25);
+
+        // Changing to "subpoints" grading method, so there should be no deduction anymore.
+        $question = $this->quba->get_question($this->slot, false);
+        $question->scoringmethod = 'subpoints';
+        $this->quba->regrade_all_questions();
         $this->check_current_mark(0.5);
 
+        // Changing back to "subpoints with deduction" and changing answers to 2 and 1,
+        // so still one right and one wrong.
+        $question = $this->quba->get_question($this->slot, false);
+        $question->scoringmethod = 'subpointdeduction';
+        $question->rows[5]->number = 2;
+        $question->rows[6]->number = 1;
+        $this->quba->regrade_all_questions();
+        $this->check_current_mark(0.25);
+
+        // Finally, change answers to 1 and 1, so now both answers are correct,
+        // we should get full marks.
+        $question = $this->quba->get_question($this->slot, false);
+        $question->scoringmethod = 'subpointdeduction';
+        $question->rows[5]->number = 1;
+        $question->rows[6]->number = 1;
+        $this->quba->regrade_all_questions();
+        $this->check_current_mark(1);
     }
 }
