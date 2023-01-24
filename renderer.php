@@ -86,7 +86,7 @@ class qtype_mtf_renderer extends qtype_renderer {
         global $CFG;
 
         $question = $qa->get_question();
-        $hasdeduction = ($question->scoringmethod === 'subpointdeduction');
+        $hasdeduction = ($question->scoringmethod === 'subpointdeduction' && get_config('qtype_mtf')->allowdeduction);
         $response = $question->get_response($qa);
 
         $inputname = $qa->get_qt_field_name('option');

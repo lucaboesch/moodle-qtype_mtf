@@ -149,3 +149,45 @@ Feature: Deduction for wrong answers
     And I press "Check"
     # Now, the deduction should not be made anymore, because the admin has not allowed it
     Then I should see "Mark 0.50 out of 1.00"
+
+  @javascript
+  Scenario: Trash icons must not be shown for other scoring methods or when deductions are not allowed
+    When I log in as "admin"
+    And I set the following administration settings values:
+      | Allow penalty deductions | 1 |
+    # Deductions are allowed, so the icon should be shown.
+    And I am on the "Course 1" "core_question > course question bank" page
+    And I choose "Edit question" action for "q1" in the question bank
+    And I set the following fields to these values:
+      | id_scoringmethod_subpointdeduction | 1   |
+      | id_deduction                       | 0.5 |
+    And I press "id_updatebutton"
+    And I click on "Preview" "link"
+    And I switch to "questionpreview" window
+    Then "fa-trash" "qtype_mtf > icon" should exist
+    And I switch to the main window
+    # Disallow deductions, the trash icon should go away, regardless of the scoring method.
+    And I set the following administration settings values:
+      | Allow penalty deductions | 0 |
+    And I am on the "Course 1" "core_question > course question bank" page
+    And I choose "Edit question" action for "q1" in the question bank
+    And I click on "Preview" "link"
+    And I switch to "questionpreview" window
+    Then "fa-trash" "qtype_mtf > icon" should not exist
+    And I switch to the main window
+    # Turn deductions back on. The icon should reappear, because the method is still with deductions.
+    And I set the following administration settings values:
+      | Allow penalty deductions | 1 |
+    And I am on the "Course 1" "core_question > course question bank" page
+    And I choose "Edit question" action for "q1" in the question bank
+    And I click on "Preview" "link"
+    And I switch to "questionpreview" window
+    Then "fa-trash" "qtype_mtf > icon" should exist
+    And I switch to the main window
+    # Set classic subpoints scoring method. The trash icon should disappear.
+    And I set the following fields to these values:
+      | id_scoringmethod_subpoints | 1 |
+    And I press "id_updatebutton"
+    And I click on "Preview" "link"
+    And I switch to "questionpreview" window
+    Then "fa-trash" "qtype_mtf > icon" should not exist
