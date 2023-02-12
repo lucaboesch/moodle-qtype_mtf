@@ -18,7 +18,6 @@ jobs:
           - php: '8.0'
             moodle-branch: 'MOODLE_401_STABLE'
             database: 'mariadb'
-
     services:
       postgres:
         image: postgres:13
@@ -34,7 +33,7 @@ jobs:
           - 5432:5432
 
       mariadb:
-        image: mariadb:10
+        image: mariadb:10.6
         env:
           MYSQL_USER: 'root'
           MYSQL_ALLOW_EMPTY_PASSWORD: "true"
@@ -44,7 +43,7 @@ jobs:
 
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           path: plugin
 

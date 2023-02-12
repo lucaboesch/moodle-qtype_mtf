@@ -374,7 +374,6 @@ Feature: Step 6
 
   # Set Scoring Method to subpoints
 
-
   # Set Scoring Method to MTF 1/0
     Given I log in as "teacher1"
     And I am on the "Quiz 1" "quiz activity" page

@@ -112,7 +112,8 @@ class qtype_mtf_edit_form extends question_edit_form {
             }
         }
 
-        if (class_exists('qbank_editquestion\\editquestion_helper') && !empty($this->question->id) && !$this->question->beingcopied) {
+        if (class_exists('qbank_editquestion\\editquestion_helper') && !empty($this->question->id) &&
+            !$this->question->beingcopied) {
             // Add extra information from plugins when editing a question (e.g.: Authors, version control and usage).
             $functionname = 'edit_form_display';
             $questiondata = [];
@@ -192,7 +193,8 @@ class qtype_mtf_edit_form extends question_edit_form {
                     $buttonarray[] = $mform->createElement('static', 'previewlink', '', $previewlink);
                 }
             } else {
-                $previewlink = $PAGE->get_renderer('core_question')->question_preview_link($this->question->id, $this->context, true);
+                $previewlink = $PAGE->get_renderer('core_question')->question_preview_link($this->question->id,
+                    $this->context, true);
                 $buttonarray[] = $mform->createElement('static', 'previewlink', '', $previewlink);
             }
         }
@@ -202,7 +204,8 @@ class qtype_mtf_edit_form extends question_edit_form {
 
         $this->add_action_buttons(true, get_string('savechanges'));
 
-        if ((!empty($this->question->id)) && (!($this->question->formoptions->canedit || $this->question->formoptions->cansaveasnew))) {
+        if ((!empty($this->question->id)) && (!($this->question->formoptions->canedit ||
+            $this->question->formoptions->cansaveasnew))) {
             $mform->hardFreezeAllVisibleExcept(array('categorymoveto', 'buttonar', 'currentgrp'));
         }
     }
@@ -246,8 +249,8 @@ class qtype_mtf_edit_form extends question_edit_form {
         $scoringbuttons[] = &$mform->createElement('radio', 'scoringmethod', '', get_string('scoringsubpoints', 'qtype_mtf'),
                                                 'subpoints', $attributes);
         if (get_config('qtype_mtf')->allowdeduction) {
-            $scoringbuttons[] = &$mform->createElement('radio', 'scoringmethod', '', get_string('scoringsubpointdeduction', 'qtype_mtf'),
-                'subpointdeduction', $attributes);
+            $scoringbuttons[] = &$mform->createElement('radio', 'scoringmethod', '',
+            get_string('scoringsubpointdeduction', 'qtype_mtf'), 'subpointdeduction', $attributes);
         }
         $scoringbuttons[] = &$mform->createElement('radio', 'scoringmethod', '', get_string('scoringmtfonezero', 'qtype_mtf'),
                                                 'mtfonezero', $attributes);
@@ -345,7 +348,8 @@ class qtype_mtf_edit_form extends question_edit_form {
      * @param int $addoptions
      *        the number of answer blanks to add. Default QUESTION_NUMANS_ADD.
      */
-    protected function add_per_answer_fields(&$mform, $label, $gradeoptions, $minoptions = QUESTION_NUMANS_START, $addoptions = QUESTION_NUMANS_ADD) {
+    protected function add_per_answer_fields(&$mform, $label, $gradeoptions, $minoptions = QUESTION_NUMANS_START,
+        $addoptions = QUESTION_NUMANS_ADD) {
         $answersoption = '';
         $repeatedoptions = array();
         $repeated = $this->get_per_answer_fields($mform, $label, $gradeoptions, $repeatedoptions, $answersoption);
@@ -589,7 +593,7 @@ class qtype_mtf_edit_form extends question_edit_form {
             }
         }
 
-        // If deduction is set, it must be >= 0 and <= 1
+        // If deduction is set, it must be >= 0 and <= 1.
         if (isset($data['deduction'])) {
             $deduction = $data['deduction'];
             if ($deduction < 0 || $deduction > 1) {
@@ -597,7 +601,7 @@ class qtype_mtf_edit_form extends question_edit_form {
             }
         }
 
-        // If admin has disallowed deductions, scoring method cannot be subpoints with deductions
+        // If admin has disallowed deductions, scoring method cannot be subpoints with deductions.
         if (get_config('qtype_mtf', 'allowdeduction') === '0') {
             if (!isset($data['scoringmethod'])) {
                 $errors['radiogroupscoring'] = get_string('cannotusedeductions', 'qtype_mtf');
@@ -612,6 +616,18 @@ class qtype_mtf_edit_form extends question_edit_form {
         for ($j = 1; $j <= $data['numberofcolumns']; ++$j) {
             if (trim(strip_tags($data["responsetext_" . $j])) == false) {
                 $errors["responsetext_" . $j] = get_string('mustsupplyvalue', 'qtype_mtf');
+            }
+        }
+
+        // Can only have one idnumber.
+        if (isset($data['idnumber']) && ((string)$data['idnumber'] !== '')) {
+            $conditions = 'idnumber = ?';
+            if (!empty($this->question->id)) {
+                $conditions .= ' AND id <> ?';
+                $params[] = $this->question->id;
+            }
+            if ($DB->record_exists_select('question', $conditions, $params)) {
+                $errors['idnumber'] = get_string('idnumbertaken', 'error');
             }
         }
 
