@@ -55,7 +55,7 @@ Feature: Step 4
 
   # No option selected
     When I click on "quiznavbutton2" "link"
-    Then "#quiznavbutton1[title='Not yet answered']" "css_element" should exist
+    Then "#quiznavbutton1[title*='Not yet answered']" "css_element" should exist
 
   # Some options selected
     When I click on ".qtype_mtf_row:contains('option text 1') input[value=1]" "css_element"
