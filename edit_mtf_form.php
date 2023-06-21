@@ -618,19 +618,6 @@ class qtype_mtf_edit_form extends question_edit_form {
                 $errors["responsetext_" . $j] = get_string('mustsupplyvalue', 'qtype_mtf');
             }
         }
-
-        // Can only have one idnumber.
-        if (isset($data['idnumber']) && ((string)$data['idnumber'] !== '')) {
-            $conditions = 'idnumber = ?';
-            if (!empty($this->question->id)) {
-                $conditions .= ' AND id <> ?';
-                $params[] = $this->question->id;
-            }
-            if ($DB->record_exists_select('question', $conditions, $params)) {
-                $errors['idnumber'] = get_string('idnumbertaken', 'error');
-            }
-        }
-
         return $errors;
     }
 }
