@@ -626,7 +626,18 @@ function get_weights($weights, $autoweights, $columns) {
     $numincorrect != 0 ? $fractionincorrect = number_format(-1 / $numincorrect, 7) : $fractionincorrect = 0;
     $fractioncorrectexists = in_array($fractioncorrect, $fractions);
     $fractionincorrectexists = in_array($fractionincorrect, $fractions);
+/*    print_r($fractioncorrect);
+    echo "<hr>";
+    echo $fractioncorrectexists ;
+    echo "<hr>";
 
+echo "<hr>";
+print_r($fractionincorrect);
+echo "<hr>";
+echo $fractionincorrectexists ;
+echo "<hr>";
+print_r($fractions);
+*/
     // Error - Case 3: Fraction value does not exist.
     // This part of code assumes that fraction 0.05 & 0.1 is part of the Moodle internal fractions.
     if (!$fractioncorrectexists || !$fractionincorrectexists ) {
