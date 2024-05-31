@@ -43,6 +43,8 @@ class qtype_mtf_edit_form extends question_edit_form {
     /** @var int numberofcolumns */
     private $numberofcolumns;
 
+    protected $responsetexts = array();
+
     /**
      * (non-PHPdoc).
      *
