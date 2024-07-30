@@ -88,6 +88,9 @@ class question_hint_mtf extends question_hint_with_parts {
  */
 class qtype_mtf extends question_type {
 
+    /** @var int numberofcolumns */
+    public $numberofcolumns;
+
     /**
      * Sets the default options for the question.
      * (non-PHPdoc)
