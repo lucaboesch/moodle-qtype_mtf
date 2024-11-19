@@ -47,15 +47,12 @@ Feature: Step 4
     And I log out
 
   # Login as student and see if everything works
-    And I log in as "student2"
-    And I am on "Course 1" course homepage
-    And I follow "Quiz 1"
-    Then I should see "Quiz 1"
+    And I am on the "Quiz 1" "quiz activity" page logged in as "student2"
     When I press "Attempt quiz"
 
   # No option selected
     When I click on "quiznavbutton2" "link"
-    Then "#quiznavbutton1[title*='Not yet answered']" "css_element" should exist
+    Then the state of "Questiontext for Question 2" question is shown as "Not yet answered"
 
   # Some options selected
     When I click on ".qtype_mtf_row:contains('option text 1') input[value=1]" "css_element"
