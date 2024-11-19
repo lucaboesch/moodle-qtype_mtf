@@ -51,8 +51,7 @@ Feature: Step 6
   Scenario: Testcase 19_2
   # Check feedback
   # Solving quiz as student1: 50% correct options (SUBPOINTS are activated)
-    When I log in as "student1"
-    And I am on the "Quiz 1" "quiz activity" page
+    When I am on the "Quiz 1" "mod_quiz > View" page logged in as "student1"
     And I press "Attempt quiz"
     And I click on ".qtype_mtf_row:contains('option text 1') input[value=1]" "css_element"
     And I click on ".qtype_mtf_row:contains('option text 2') input[value=1]" "css_element"
@@ -87,8 +86,7 @@ Feature: Step 6
   Scenario: Testcase 11, 19
   # Check feedback
   # Solving quiz as student1: 50% correct options (SUBPOINTS are activated). Some options are not answered at all.
-    When I log in as "student1"
-    And I am on the "Quiz 1" "quiz activity" page
+    When I am on the "Quiz 1" "mod_quiz > View" page logged in as "student1"
     And I press "Attempt quiz"
     And I click on ".qtype_mtf_row:contains('option text 1') input[value=1]" "css_element"
     And I click on ".qtype_mtf_row:contains('option text 2') input[value=1]" "css_element"
@@ -118,8 +116,7 @@ Feature: Step 6
   @javascript
   Scenario: Testcase 20
   # Check if answers are stored correctly
-    When I log in as "student1"
-    And I am on the "Quiz 1" "quiz activity" page
+    When I am on the "Quiz 1" "mod_quiz > View" page logged in as "student1"
     And I press "Attempt quiz"
     And I click on ".qtype_mtf_row:contains('option text 1') input[value=1]" "css_element"
     And I click on ".qtype_mtf_row:contains('option text 2') input[value=1]" "css_element"
@@ -162,8 +159,7 @@ Feature: Step 6
     And I log out
 
   # Solving quiz as student1: 100% correct options (SUBPOINTS are activated)
-    When I log in as "student1"
-    And I am on the "Quiz 1" "quiz activity" page
+    When I am on the "Quiz 1" "mod_quiz > View" page logged in as "student1"
     And I press "Attempt quiz"
     And I click on ".qtype_mtf_row:contains('option text 1') input[value=1]" "css_element"
     And I click on ".qtype_mtf_row:contains('option text 2') input[value=1]" "css_element"
@@ -187,8 +183,7 @@ Feature: Step 6
     And I log out
 
   # Solving quiz as student2: 50% correct options (SUBPOINTS are activated)
-    When I log in as "student2"
-    And I am on the "Quiz 1" "quiz activity" page
+    When I am on the "Quiz 1" "mod_quiz > View" page logged in as "student2"
     And I press "Attempt quiz"
     And I click on ".qtype_mtf_row:contains('option text 1') input[value=1]" "css_element"
     And I click on ".qtype_mtf_row:contains('option text 2') input[value=1]" "css_element"
@@ -212,8 +207,7 @@ Feature: Step 6
     And I log out
 
   # Solving quiz as student3: 0% correct options (SUBPOINTS are activated)
-    When I log in as "student3"
-    And I am on the "Quiz 1" "quiz activity" page
+    When I am on the "Quiz 1" "mod_quiz > View" page logged in as "student3"
     And I press "Attempt quiz"
     And I click on ".qtype_mtf_row:contains('option text 1') input[value=2]" "css_element"
     And I click on ".qtype_mtf_row:contains('option text 2') input[value=2]" "css_element"
@@ -285,8 +279,7 @@ Feature: Step 6
     And I log out
 
   # Solving quiz as student4: 100% correct options (MTF1/0 is activated)
-    When I log in as "student4"
-    And I am on the "Quiz 1" "quiz activity" page
+    When I am on the "Quiz 1" "mod_quiz > View" page logged in as "student4"
     And I press "Attempt quiz"
     And I click on ".qtype_mtf_row:contains('option text 1') input[value=1]" "css_element"
     And I click on ".qtype_mtf_row:contains('option text 2') input[value=1]" "css_element"
@@ -310,8 +303,7 @@ Feature: Step 6
     And I log out
 
   # Solving quiz as student5: 0% correct options (MTF1/0 is activated)
-    When I log in as "student5"
-    And I am on the "Quiz 1" "quiz activity" page
+    When I am on the "Quiz 1" "mod_quiz > View" page logged in as "student5"
     And I press "Attempt quiz"
     And I click on ".qtype_mtf_row:contains('option text 1') input[value=1]" "css_element"
     And I click on ".qtype_mtf_row:contains('option text 2') input[value=1]" "css_element"
@@ -385,8 +377,7 @@ Feature: Step 6
     And I log out
 
   # Solving quiz as student4: 100% correct options (MTF1/0 is activated)
-    When I log in as "student4"
-    And I am on the "Quiz 1" "quiz activity" page
+    When I am on the "Quiz 1" "mod_quiz > View" page logged in as "student4"
     And I press "Attempt quiz"
     And I click on ".qtype_mtf_row:contains('option text 1') input[value=1]" "css_element"
     And I click on ".qtype_mtf_row:contains('option text 2') input[value=1]" "css_element"
@@ -410,8 +401,7 @@ Feature: Step 6
     And I log out
 
   # Solving quiz as student5: 0% correct options (MTF1/0 is activated)
-    When I log in as "student5"
-    And I am on the "Quiz 1" "quiz activity" page
+    When I am on the "Quiz 1" "mod_quiz > View" page logged in as "student5"
     And I press "Attempt quiz"
     And I click on ".qtype_mtf_row:contains('option text 1') input[value=1]" "css_element"
     And I click on ".qtype_mtf_row:contains('option text 2') input[value=1]" "css_element"
